@@ -10,11 +10,18 @@
 #' content will be controlled from the generated background.md file.
 #' @param summary Whether to include a panel with a summary of content in the
 #' `result`.
-#' @param panels List specifying order of results. Each panel is determined
-#' by the available result types in the result object. Panels for any available
-#' results not specified will be included after the specified result tabs.
+#' @param panelStructure A named list of panel indetifiers to organise them in
+#' dropdown menus.
+#' @param panelDetails A named list to provide details for each one of the
+#' panels, such as: result_id, result_type, title, icon, output_id, ... Name of
+#' each element must be the identifier name of `panelStructure`.
 #' @param open Whether to open the shiny app project.
-#' @param theme Assign a theme to the shiny app using bslib::bs_theme()
+#' @param theme Specify the theme for the Shiny application. You can either
+#' select a predefined theme provided by the package (e.g., `"theme1"`), or
+#' define a custom theme using `bslib::bs_theme()`. If using a custom theme, it
+#' must be provided as a character string (e.g.,
+#' `"bslib::bs_theme(bg = 'white', fg = 'black')"`).
+#' @param panels deprecated.
 #'
 #' @return The shiny app will be created in directory.
 #'
@@ -22,9 +29,8 @@
 #'
 #' @examples
 #' exportStaticApp(
-#'   result = emptySummarisedResult(),
-#'   directory = tempdir(),
-#'   theme = "bslib::bs_theme(bg = '#bb0a1e', fg = '#0000ff')"
+#'   result = omopgenerics::emptySummarisedResult(),
+#'   directory = tempdir()
 #' )
 #'
 exportStaticApp <- function(result,
@@ -33,71 +39,104 @@ exportStaticApp <- function(result,
                             title = "",
                             background = TRUE,
                             summary = TRUE,
-                            panels = list(),
+                            panelStructure = NULL,
+                            panelDetails = NULL,
                             theme = NULL,
-                            open = rlang::is_interactive()) {
+                            open = rlang::is_interactive(),
+                            panels = lifecycle::deprecated()) {
   # input check
   result <- omopgenerics::validateResultArgument(result)
+
   omopgenerics::assertCharacter(directory, length = 1)
   omopgenerics::assertLogical(open, length = 1)
   omopgenerics::assertCharacter(logo, length = 1, null = TRUE)
   omopgenerics::assertCharacter(title, length = 1)
   omopgenerics::assertLogical(summary, length = 1)
   omopgenerics::assertCharacter(theme, length = 1, null = TRUE)
-  omopgenerics::assertLogical(background, length = 1)
-  directory <- validateDirectory(directory)
-  if (isTRUE(directory)) {
-    return(cli::cli_inform(c("i" = "{.strong shiny} folder will not be overwritten. Stopping process.")))
+  theme <- validateTheme(theme)
+  if (lifecycle::is_present(panels)) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "exportStaticApp(panels= )",
+      with = "exportStaticApp(panelStructure= )"
+    )
+    if (missing(panelStructure)) panelStructure <- panels
   }
-  resType <- omopgenerics::settings(result)[["result_type"]] |> unique()
-  panels <- validatePanels(panels, resType)
+
+  panelDetails <- validatePanelDetails(panelDetails, result)
+  panelStructure <- validatePanelStructure(panelStructure, panelDetails, result)
 
   # processing data
   cli::cli_inform(c("i" = "Processing data"))
-  choices <- getChoices(result)
-  if (length(resType) == 0) {
-    c("!" = "No result_type(s) found, the generated shiny will be empty.") |>
+  if (length(panelDetails) == 0) {
+    c("!" = "No panels identified, generated shiny will be empty.") |>
       cli::cli_inform()
   } else {
-    c("v" = "Data processed: {length(resType)} result type{?s} idenfied: {.var {resType}}.") |>
+    c("v" = "Data processed: {length(panelDetails)} panel{?s} idenfied: {.var {names(panelDetails)}}.") |>
       cli::cli_inform()
   }
 
   # create shiny
+  directory <- validateDirectory(directory)
+  if (isTRUE(directory)) {
+    return(cli::cli_inform(c("i" = "{.strong shiny} folder will not be overwritten. Stopping process.")))
+  }
   directory <- file.path(directory, "shiny")
   dir.create(path = directory, showWarnings = FALSE)
   cli::cli_inform(c("i" = "Creating shiny from provided data"))
 
+  # preprocess file
+  resultList <- panelDetails |>
+    purrr::map(\(x) x$result_id)
+  preprocess <- c(
+    "# shiny is prepared to work with this resultList, please do not change them",
+    paste0("resultList <- ", writeResultList(resultList)),
+    omopViewerPreprocess
+  ) |>
+    styleCode()
+
   # copy the logos to the shiny folder
   logo <- copyLogos(logo, directory)
+
+  # background
+  background <- validateBackground(background, logo)
+
+  # add filter buttons
+  panelDetails <- panelDetails |>
+    addFilterNames(result)
 
   # create ui
   ui <- c(
     messageShiny(),
     uiStatic(
-      choices = choices,
       logo = logo,
       title = title,
       summary = summary,
-      background = background,
+      background = !is.null(background),
       theme = theme,
-      panels = panels
+      panelStructure = panelStructure,
+      panelDetails = panelDetails
     )
-  )
+  ) |>
+    styleCode()
 
   # create server
   server <- c(
     messageShiny(),
-    serverStatic(
-      resultTypes = resType
-    )
-  )
+    serverStatic(panelDetails = panelDetails)
+  ) |>
+    styleCode()
+
+  # functions to copy
+  functions <- readLines(system.file("functions.R", package = "OmopViewer"))
 
   # check installed libraries
   libraries <- c(
     detectPackages(ui),
     detectPackages(server),
-    detectPackages(omopViewerGlobal)
+    detectPackages(omopViewerGlobal),
+    detectPackages(preprocess),
+    detectPackages(functions)
   ) |>
     unique() |>
     sort()
@@ -108,22 +147,28 @@ exportStaticApp <- function(result,
   global <- c(messageShiny(), libraryStatementsList, "", omopViewerGlobal) |>
     styleCode()
 
+  # prepare data
+  filterValues <- defaultFilterValues(result, resultList)
+  data <- prepareResult(result, resultList)
+
   # write files in the corresponding directory
-  dir.create(file.path(directory, "data"), showWarnings = FALSE)
-  if (background) {
-    defaultBackground(logo) |>
-      writeLines(con = file.path(directory, "background.md"))
+  if (!is.null(background)) {
+    writeLines(background, con = file.path(directory, "background.md"))
   }
   writeLines(ui, con = file.path(directory, "ui.R"))
   writeLines(server, con = file.path(directory, "server.R"))
   writeLines(global, con = file.path(directory, "global.R"))
+  writeLines(functions, con = file.path(directory, "functions.R"))
   writeLines(omopViewerProj, con = file.path(directory, "shiny.Rproj"))
-  exportSummarisedResult(
-    result,
-    minCellCount = 0,
-    fileName = "results.csv",
-    path = file.path(directory, "data")
+
+  # export data
+  dataPath <- file.path(directory, "data")
+  dir.create(dataPath, showWarnings = FALSE)
+  omopgenerics::exportSummarisedResult(
+    result, minCellCount = 0, fileName = "results.csv", path = dataPath
   )
+  save(data, filterValues, file = file.path(dataPath, "shinyData.RData"))
+  writeLines(preprocess, con = file.path(dataPath, "preprocess.R"))
 
   cli::cli_inform(c("v" = "Shiny created in: {.pkg {directory}}"))
 
@@ -184,29 +229,68 @@ logoPath <- function(logo) {
     logo
   }
 }
+addFilterNames <- function(panelDetails, result) {
+  panelDetails |>
+    purrr::map(\(x) {
+      filters <- omopgenerics::settings(result) |>
+        dplyr::filter(.data$result_id %in% .env$x$result_id) |>
+        dplyr::select(!dplyr::any_of(c(
+          "result_id", "result_type", "package_version", "package_name",
+          "min_cell_count"
+        ))) |>
+        purrr::imap(\(x, nm) {
+          if (nm %in% c("group", "strata", "additional")) {
+            x <- x |>
+              stringr::str_split(pattern = " &&& ") |>
+              unlist() |>
+              unique()
+            glue::glue("grouping_{x[x != \"\"]}") |>
+              as.character()
+          } else if (sum(!is.na(x)) > 0){
+            paste0("settings_", nm)
+          } else {
+            NULL
+          }
+        }) |>
+        purrr::compact() |>
+        unname() |>
+        unlist()
+      if (any(result$result_id %in% x$result_id)) {
+        filters <- c(
+          "grouping_cdm_name", "variable_name", "estimate_name", filters
+        )
+      }
+      if (length(filters) == 0) filters <- character()
+      x$filter_name <- filters
+      x
+    })
+}
+
 
 # ui ----
-uiStatic <- function(choices = list(),
-                     logo = NULL,
-                     title = "",
-                     background = TRUE,
-                     summary = FALSE,
-                     theme = NULL,
-                     panels = list()) {
-  # Create the bslib::bs_theme() call, or use NULL if not provided
-  theme_setting <- if (!is.null(theme)) {
-    paste0("theme = ", theme, ",")
-  } else {
-    ""
-  }
+uiStatic <- function(logo,
+                     title,
+                     background,
+                     summary,
+                     theme,
+                     panelDetails,
+                     panelStructure) {
+  # theme
+  theme_setting <- paste0("theme = ", theme, ",")
+
+  # create panels
+  panels <- createUiPanels(panelDetails) |>
+    structurePanels(panelStructure)
+
+  # ui
   c(
     "ui <- bslib::page_navbar(",
-    theme_setting,
     c(
       pageTitle(title, logo),
+      pageTheme(theme),
       createBackground(background),
       summaryTab(summary),
-      createUi(choices, panels),
+      panels,
       "bslib::nav_spacer()",
       downloadRawDataUi(),
       createAbout("hds_logo.svg"),
@@ -215,8 +299,7 @@ uiStatic <- function(choices = list(),
       paste0(collapse = ",\n"),
     ")"
   ) |>
-    paste0(collapse = "\n") |>
-    styleCode()
+    paste0(collapse = "\n")
 }
 
 pageTitle <- function(title, logo) {
@@ -239,16 +322,15 @@ pageTitle <- function(title, logo) {
 }
 
 # server ----
-serverStatic <- function(resultTypes = character()) {
+serverStatic <- function(panelDetails) {
   paste0(
     c(
       "server <- function(input, output, session) {",
-      createServer(resultTypes, data = "data"),
+      createServer(panelDetails, data = "data"),
       "}"
     ),
     collapse = "\n"
-  ) |>
-    styleCode()
+  )
 }
 
 # utilities ----
@@ -297,3 +379,15 @@ subs <- function(x, pat, subst) {
   }
   return(x)
 }
+writeResultList <- function(resultList) {
+  if (length(resultList) == 0) return("list()")
+  paste0(
+    "list(\n",
+    purrr::imap_chr(resultList, \(x, nm) {
+      paste0(cast(nm), " = c(", paste0(x, collapse = "L, "), "L)")
+    }) |>
+      paste0(collapse = ",\n"),
+    "\n)"
+  )
+}
+

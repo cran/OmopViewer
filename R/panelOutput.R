@@ -29,7 +29,7 @@ getOutputDownload <- function(outputId) {
   type <- getOutputType(outputId)
   extraButtons <- switch (
     type,
-    "gt" = 'shiny::selectizeInput(
+    "gt" = 'shinyWidgets::pickerInput(
       inputId = "{prefix}_download_type",
       label = "File type",
       selected = "docx",
@@ -59,7 +59,7 @@ getOutputDownload <- function(outputId) {
         label = "Height",
         value = 10
       )',
-      'shiny::selectizeInput(
+      'shinyWidgets::pickerInput(
         inputId = "{prefix}_download_units",
         label = "Units",
         selected = "cm",
@@ -203,8 +203,10 @@ getOutputPrefix <- function(x, rt) {
 }
 
 outputUi <- function(tab, choic) {
-  setCols <- names(choic$settings)
-  groupCols <- names(choic$grouping)
+  setCols <- choic[startsWith(x = choic, prefix = "settings_")]
+  setCols <- substr(setCols, 10, nchar(setCols))
+  groupCols <- choic[startsWith(x = choic, prefix = "grouping_")]
+  groupCols <- substr(groupCols, 10, nchar(groupCols))
   varCols <- c("variable_name", "variable_level", "estimate_name")
   tab |>
     getOutputIds() |>
@@ -214,20 +216,32 @@ outputUi <- function(tab, choic) {
       sidebar <- getOutputSidebar(x, setCols, groupCols, varCols)
       output <- getOutputUi(x)
       prefix <- getOutputPrefix(x, tab)
-      'bslib::nav_panel(
-        title = "{title}",
-        bslib::card(
-          full_screen = TRUE,
-          {download},
-          bslib::layout_sidebar(
-            sidebar = bslib::sidebar(
-              {sidebar},
-              position = "right"
-            ),
+      if (sidebar == "") {
+        res <- 'bslib::nav_panel(
+          title = "{title}",
+          bslib::card(
+            full_screen = TRUE,
+            {download},
             {output}
           )
-        )
-      )' |>
+        )'
+      } else {
+        res <- 'bslib::nav_panel(
+          title = "{title}",
+          bslib::card(
+            full_screen = TRUE,
+            {download},
+            bslib::layout_sidebar(
+              sidebar = bslib::sidebar(
+                {sidebar},
+                position = "right"
+              ),
+              {output}
+            )
+          )
+        )'
+      }
+      res |>
         glue::glue() |>
         glue::glue() |>
         as.character()
@@ -282,11 +296,10 @@ renderOutput <- function(id) {
          "grViz" = "DiagrammeR::renderGrViz")
 }
 
-outputServer <- function(rt, data) {
-  ids <- getOutputIds(rt)
-  if (length(ids) == 0) return(NULL)
+outputServer <- function(rt, outputId, data) {
+  if (length(outputId) == 0) return(NULL)
 
-  purrr::map_chr(ids, \(id) {
+  purrr::map_chr(outputId, \(id) {
     prefix <- getOutputPrefix(id, rt)
     args <- omopViewerOutputArguments |>
       dplyr::filter(.data$output_id == .env$id & !is.na(.data$argument)) |>
@@ -300,7 +313,7 @@ outputServer <- function(rt, data) {
     c("## output [id] -----",
       'createOutput[id] <- shiny::reactive({
         result <- [data] |>
-          OmopViewer::filterData("[rt]", input)
+          filterData("[rt]", input)
         [getOutputFunction(id)](
           [inputs]
         )
