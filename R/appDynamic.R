@@ -11,6 +11,8 @@ launchDynamicApp <- function() {
 
 serverDynamic <- function(input, output, session) {
 
+  local(options(shiny.maxRequestSize = 10 * 1024^3))
+
   # reactive data
   panels <- shiny::reactiveVal(list())
   workingData <- shiny::reactiveVal(list())
@@ -62,19 +64,19 @@ serverDynamic <- function(input, output, session) {
     panelDetails <- panelDetailsFromResult(dataToUpload)
 
     # create the new workingData()
-    set <- omopgenerics::settings(dataToUpload)
-    resultList <- purrr::map(panelDetails, \(x) x$result_id)
+    resultList <- resultListFromPanelDetails(panelDetails)
     workingData(prepareResult(dataToUpload, resultList))
 
     # add server modules
-    serverModeule <- paste0(c(
+    serverModule <- paste0(c(
       "function(input, output, session) {",
+      createSummaryServer(summary = input$configuration_summary, data = "workingData()"),
       createServer(panelDetails, data = "workingData()"),
       "}"
     ), collapse = "\n") |>
       rlang::parse_expr() |>
       rlang::eval_tidy()
-    shiny::moduleServer(id = NULL, module = serverModeule)
+    shiny::moduleServer(id = NULL, module = serverModule)
   })
 
 }
@@ -83,9 +85,7 @@ createDynamicUi <- function(panels, summary, data, theme) {
 
   if (isTRUE(summary)) {
     panels <- c(
-      list(bslib::nav_panel(
-        title = "Summary", icon = shiny::icon("file-alt"), summaryCard(data)
-      )),
+      list(rlang::eval_tidy(rlang::parse_exprs(summaryTab(TRUE)))),
       panels
     )
     summary <- TRUE
@@ -166,14 +166,18 @@ createDynamicUi <- function(panels, summary, data, theme) {
 }
 panelsUi <- function(result) {
   # create panelDetails
-  panelDetails <- addFilterNames(panelDetailsFromResult(result), result)
+  panelDetails <- panelDetailsFromResult(result) |>
+    populatePanelDetailsOptions(result)
   # create panels
-  panels <- createUiPanels(panelDetails)
+  panels <- writeUiPanels(panelDetails)
 
   # resultList from panelDetails
-  resultList <- purrr::map(panelDetails, \(x) x$result_id)
+  resultList <- resultListFromPanelDetails(panelDetails)
+
   # filterValues from resultList
-  filterValues <- defaultFilterValues(result, resultList)
+  values <- getValues(result, resultList)
+  choices <- values
+  selected <- values
 
   # evaluate the panels
   purrr::map(panels, \(x) rlang::eval_tidy(rlang::parse_expr(x)))

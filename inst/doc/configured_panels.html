@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Panels definned in OmopViewer</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Panels definned in OmopViewer</h1>
+
+
+
+<p>The <strong>OmopViewer</strong> package generates shiny apps from
+predefined configurations, you can check the existent panels using the
+<code>defaultPanels()</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">defaultPanels</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;summarise_omop_snapshot&quot;                 </span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt;  [2] &quot;summarise_observation_period&quot;            </span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;summarise_clinical_records&quot;              </span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;summarise_record_count&quot;                  </span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;summarise_missing_data&quot;                  </span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt;  [6] &quot;summarise_in_observation&quot;                </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;orphan_code_use&quot;                         </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt;  [8] &quot;cohort_code_use&quot;                         </span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;code_use&quot;                                </span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; [10] &quot;achilles_code_use&quot;                       </span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; [11] &quot;unmapped_codes&quot;                          </span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; [12] &quot;summarise_cohort_overlap&quot;                </span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; [13] &quot;summarise_cohort_count&quot;                  </span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; [14] &quot;summarise_cohort_attrition&quot;              </span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; [15] &quot;summarise_cohort_timing&quot;                 </span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; [16] &quot;summarise_characteristics&quot;               </span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; [17] &quot;summarise_large_scale_characteristics&quot;   </span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; [18] &quot;incidence&quot;                               </span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; [19] &quot;incidence_attrition&quot;                     </span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; [20] &quot;prevalence&quot;                              </span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; [21] &quot;prevalence_attrition&quot;                    </span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; [22] &quot;summarise_dose_coverage&quot;                 </span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; [23] &quot;summarise_proportion_of_patients_covered&quot;</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; [24] &quot;summarise_drug_restart&quot;                  </span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; [25] &quot;summarise_drug_utilisation&quot;              </span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; [26] &quot;summarise_indication&quot;                    </span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; [27] &quot;summarise_treatment&quot;                     </span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; [28] &quot;default&quot;</span></span></code></pre></div>
+<p>You can check the details of a panel using <code>getPanel()</code>
+function:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">getPanel</span>(<span class="st">&quot;incidence&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; Incidence (OmopViewer panel)</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; • icon: chart-line</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;incidence&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Incidence (gt); Plot Incidence (plot)</span></span></code></pre></div>
+<p>The exported object <em>omopViewerPanels</em> contains all the
+defined panels in the package:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>omopViewerPanels</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; $summarise_omop_snapshot</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Snapshot (OmopViewer panel)</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; • icon: clipboard-list</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_omop_snapshot&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 1 automatic filters</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Snapshot (gt)</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; $summarise_observation_period</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; Observation period (OmopViewer panel)</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; • icon: eye</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_observation_period&gt;</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 4 automatic filters</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Observation period (gt); Plot Observation period</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt;   (plot)</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; $summarise_clinical_records</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; Clinical records (OmopViewer panel)</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; • icon: bars-staggered</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_clinical_records&gt;</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Clinical records (gt)</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; $summarise_record_count</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; Record count (OmopViewer panel)</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; • icon: signal</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_record_count&gt;</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Plot record count (plot)</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; $summarise_missing_data</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; Missing data (OmopViewer panel)</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; • icon: circle-exclamation</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_missing_data&gt;</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Missing data (gt)</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt; $summarise_in_observation</span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; In Observation (OmopViewer panel)</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt; • icon: explosion</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_in_observation&gt;</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Plot in observation (plot)</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt; $orphan_code_use</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co">#&gt; Orphan codes (OmopViewer panel)</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="co">#&gt; • icon: magnifying-glass-arrow-right</span></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;orphan_code_use&gt;</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 4 automatic filters</span></span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Orphan codes (gt)</span></span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a><span class="co">#&gt; $cohort_code_use</span></span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a><span class="co">#&gt; Cohort code use (OmopViewer panel)</span></span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a><span class="co">#&gt; • icon: chart-column</span></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;cohort_code_use&gt;</span></span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 4 automatic filters</span></span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Cohort code use (gt)</span></span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a><span class="co">#&gt; $code_use</span></span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a><span class="co">#&gt; Code use (OmopViewer panel)</span></span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a><span class="co">#&gt; • icon: chart-column</span></span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;code_use&gt;</span></span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Code use (gt)</span></span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a><span class="co">#&gt; $achilles_code_use</span></span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a><span class="co">#&gt; Achilles code use (OmopViewer panel)</span></span>
+<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a><span class="co">#&gt; • icon: chart-column</span></span>
+<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;achilles_code_use&gt;</span></span>
+<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Achilles code use (gt)</span></span>
+<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a><span class="co">#&gt; $unmapped_codes</span></span>
+<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a><span class="co">#&gt; Unmapped codes (OmopViewer panel)</span></span>
+<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a><span class="co">#&gt; • icon: chart-column</span></span>
+<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;unmapped_codes&gt;</span></span>
+<span id="cb3-77"><a href="#cb3-77" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-78"><a href="#cb3-78" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Unmapped codes (gt)</span></span>
+<span id="cb3-79"><a href="#cb3-79" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-80"><a href="#cb3-80" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_overlap</span></span>
+<span id="cb3-81"><a href="#cb3-81" tabindex="-1"></a><span class="co">#&gt; Cohort Overlap (OmopViewer panel)</span></span>
+<span id="cb3-82"><a href="#cb3-82" tabindex="-1"></a><span class="co">#&gt; • icon: circle-half-stroke</span></span>
+<span id="cb3-83"><a href="#cb3-83" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_cohort_overlap&gt;</span></span>
+<span id="cb3-84"><a href="#cb3-84" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 5 automatic filters</span></span>
+<span id="cb3-85"><a href="#cb3-85" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Overlap (gt); Plot Overlap (plot)</span></span>
+<span id="cb3-86"><a href="#cb3-86" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-87"><a href="#cb3-87" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_count</span></span>
+<span id="cb3-88"><a href="#cb3-88" tabindex="-1"></a><span class="co">#&gt; Cohort Count (OmopViewer panel)</span></span>
+<span id="cb3-89"><a href="#cb3-89" tabindex="-1"></a><span class="co">#&gt; • icon: users</span></span>
+<span id="cb3-90"><a href="#cb3-90" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_cohort_count&gt;</span></span>
+<span id="cb3-91"><a href="#cb3-91" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 4 automatic filters</span></span>
+<span id="cb3-92"><a href="#cb3-92" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Counts (gt); Plot Counts (plot)</span></span>
+<span id="cb3-93"><a href="#cb3-93" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-94"><a href="#cb3-94" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_attrition</span></span>
+<span id="cb3-95"><a href="#cb3-95" tabindex="-1"></a><span class="co">#&gt; Cohort Attrition (OmopViewer panel)</span></span>
+<span id="cb3-96"><a href="#cb3-96" tabindex="-1"></a><span class="co">#&gt; • icon: layer-group</span></span>
+<span id="cb3-97"><a href="#cb3-97" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_cohort_attrition&gt;</span></span>
+<span id="cb3-98"><a href="#cb3-98" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 2 automatic filters</span></span>
+<span id="cb3-99"><a href="#cb3-99" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Attrition (gt); Diagram (grViz)</span></span>
+<span id="cb3-100"><a href="#cb3-100" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-101"><a href="#cb3-101" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_timing</span></span>
+<span id="cb3-102"><a href="#cb3-102" tabindex="-1"></a><span class="co">#&gt; Cohort Timing (OmopViewer panel)</span></span>
+<span id="cb3-103"><a href="#cb3-103" tabindex="-1"></a><span class="co">#&gt; • icon: chart-simple</span></span>
+<span id="cb3-104"><a href="#cb3-104" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_cohort_timing&gt;</span></span>
+<span id="cb3-105"><a href="#cb3-105" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 2 automatic filters</span></span>
+<span id="cb3-106"><a href="#cb3-106" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Timing (gt); Plot Timing (plot)</span></span>
+<span id="cb3-107"><a href="#cb3-107" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-108"><a href="#cb3-108" tabindex="-1"></a><span class="co">#&gt; $summarise_characteristics</span></span>
+<span id="cb3-109"><a href="#cb3-109" tabindex="-1"></a><span class="co">#&gt; Cohort Characteristics (OmopViewer panel)</span></span>
+<span id="cb3-110"><a href="#cb3-110" tabindex="-1"></a><span class="co">#&gt; • icon: users-gear</span></span>
+<span id="cb3-111"><a href="#cb3-111" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_characteristics&gt;</span></span>
+<span id="cb3-112"><a href="#cb3-112" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 4 automatic filters</span></span>
+<span id="cb3-113"><a href="#cb3-113" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Characteristics (gt); Plot Characteristics (plot)</span></span>
+<span id="cb3-114"><a href="#cb3-114" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-115"><a href="#cb3-115" tabindex="-1"></a><span class="co">#&gt; $summarise_large_scale_characteristics</span></span>
+<span id="cb3-116"><a href="#cb3-116" tabindex="-1"></a><span class="co">#&gt; Large Scale Characteristics (OmopViewer panel)</span></span>
+<span id="cb3-117"><a href="#cb3-117" tabindex="-1"></a><span class="co">#&gt; • icon: arrow-up-right-dots</span></span>
+<span id="cb3-118"><a href="#cb3-118" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_large_scale_characteristics&gt;</span></span>
+<span id="cb3-119"><a href="#cb3-119" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 4 automatic filters</span></span>
+<span id="cb3-120"><a href="#cb3-120" tabindex="-1"></a><span class="co">#&gt; • content: Table (reactable); Most common codes (gt); Plot Compared (plotly)</span></span>
+<span id="cb3-121"><a href="#cb3-121" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-122"><a href="#cb3-122" tabindex="-1"></a><span class="co">#&gt; $incidence</span></span>
+<span id="cb3-123"><a href="#cb3-123" tabindex="-1"></a><span class="co">#&gt; Incidence (OmopViewer panel)</span></span>
+<span id="cb3-124"><a href="#cb3-124" tabindex="-1"></a><span class="co">#&gt; • icon: chart-line</span></span>
+<span id="cb3-125"><a href="#cb3-125" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;incidence&gt;</span></span>
+<span id="cb3-126"><a href="#cb3-126" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-127"><a href="#cb3-127" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Incidence (gt); Plot Incidence (plot)</span></span>
+<span id="cb3-128"><a href="#cb3-128" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-129"><a href="#cb3-129" tabindex="-1"></a><span class="co">#&gt; $incidence_attrition</span></span>
+<span id="cb3-130"><a href="#cb3-130" tabindex="-1"></a><span class="co">#&gt; Incidence Attrition (OmopViewer panel)</span></span>
+<span id="cb3-131"><a href="#cb3-131" tabindex="-1"></a><span class="co">#&gt; • icon: layer-group</span></span>
+<span id="cb3-132"><a href="#cb3-132" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;incidence_attrition&gt;</span></span>
+<span id="cb3-133"><a href="#cb3-133" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 2 automatic filters</span></span>
+<span id="cb3-134"><a href="#cb3-134" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Incidence Attrition (gt)</span></span>
+<span id="cb3-135"><a href="#cb3-135" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-136"><a href="#cb3-136" tabindex="-1"></a><span class="co">#&gt; $prevalence</span></span>
+<span id="cb3-137"><a href="#cb3-137" tabindex="-1"></a><span class="co">#&gt; Prevalence (OmopViewer panel)</span></span>
+<span id="cb3-138"><a href="#cb3-138" tabindex="-1"></a><span class="co">#&gt; • icon: chart-column</span></span>
+<span id="cb3-139"><a href="#cb3-139" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;prevalence&gt;</span></span>
+<span id="cb3-140"><a href="#cb3-140" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-141"><a href="#cb3-141" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Prevalence (gt); Plot Prevalence (plot)</span></span>
+<span id="cb3-142"><a href="#cb3-142" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-143"><a href="#cb3-143" tabindex="-1"></a><span class="co">#&gt; $prevalence_attrition</span></span>
+<span id="cb3-144"><a href="#cb3-144" tabindex="-1"></a><span class="co">#&gt; Prevalence Attrition (OmopViewer panel)</span></span>
+<span id="cb3-145"><a href="#cb3-145" tabindex="-1"></a><span class="co">#&gt; • icon: layer-group</span></span>
+<span id="cb3-146"><a href="#cb3-146" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;prevalence_attrition&gt;</span></span>
+<span id="cb3-147"><a href="#cb3-147" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 2 automatic filters</span></span>
+<span id="cb3-148"><a href="#cb3-148" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Prevalence Attrition (gt)</span></span>
+<span id="cb3-149"><a href="#cb3-149" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-150"><a href="#cb3-150" tabindex="-1"></a><span class="co">#&gt; $summarise_dose_coverage</span></span>
+<span id="cb3-151"><a href="#cb3-151" tabindex="-1"></a><span class="co">#&gt; Dose coverage (OmopViewer panel)</span></span>
+<span id="cb3-152"><a href="#cb3-152" tabindex="-1"></a><span class="co">#&gt; • icon: pills</span></span>
+<span id="cb3-153"><a href="#cb3-153" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_dose_coverage&gt;</span></span>
+<span id="cb3-154"><a href="#cb3-154" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-155"><a href="#cb3-155" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Dose coverage (gt)</span></span>
+<span id="cb3-156"><a href="#cb3-156" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-157"><a href="#cb3-157" tabindex="-1"></a><span class="co">#&gt; $summarise_proportion_of_patients_covered</span></span>
+<span id="cb3-158"><a href="#cb3-158" tabindex="-1"></a><span class="co">#&gt; Proportion of patients covered (OmopViewer panel)</span></span>
+<span id="cb3-159"><a href="#cb3-159" tabindex="-1"></a><span class="co">#&gt; • icon: chart-gantt</span></span>
+<span id="cb3-160"><a href="#cb3-160" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_proportion_of_patients_covered&gt;</span></span>
+<span id="cb3-161"><a href="#cb3-161" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 3 automatic filters</span></span>
+<span id="cb3-162"><a href="#cb3-162" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table PPC (gt); Plot PPC (plot)</span></span>
+<span id="cb3-163"><a href="#cb3-163" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-164"><a href="#cb3-164" tabindex="-1"></a><span class="co">#&gt; $summarise_drug_restart</span></span>
+<span id="cb3-165"><a href="#cb3-165" tabindex="-1"></a><span class="co">#&gt; Drug Restart (OmopViewer panel)</span></span>
+<span id="cb3-166"><a href="#cb3-166" tabindex="-1"></a><span class="co">#&gt; • icon: chart-gantt</span></span>
+<span id="cb3-167"><a href="#cb3-167" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_drug_restart&gt;</span></span>
+<span id="cb3-168"><a href="#cb3-168" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 3 automatic filters</span></span>
+<span id="cb3-169"><a href="#cb3-169" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Drug Restart (gt); Plot Drug Restart (plot)</span></span>
+<span id="cb3-170"><a href="#cb3-170" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-171"><a href="#cb3-171" tabindex="-1"></a><span class="co">#&gt; $summarise_drug_utilisation</span></span>
+<span id="cb3-172"><a href="#cb3-172" tabindex="-1"></a><span class="co">#&gt; Drug Utilisation (OmopViewer panel)</span></span>
+<span id="cb3-173"><a href="#cb3-173" tabindex="-1"></a><span class="co">#&gt; • icon: capsules</span></span>
+<span id="cb3-174"><a href="#cb3-174" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_drug_utilisation&gt;</span></span>
+<span id="cb3-175"><a href="#cb3-175" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-176"><a href="#cb3-176" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Drug Utilisation (gt); Plot Drug Utilisation (plot)</span></span>
+<span id="cb3-177"><a href="#cb3-177" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-178"><a href="#cb3-178" tabindex="-1"></a><span class="co">#&gt; $summarise_indication</span></span>
+<span id="cb3-179"><a href="#cb3-179" tabindex="-1"></a><span class="co">#&gt; Indication (OmopViewer panel)</span></span>
+<span id="cb3-180"><a href="#cb3-180" tabindex="-1"></a><span class="co">#&gt; • icon: disease</span></span>
+<span id="cb3-181"><a href="#cb3-181" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_indication&gt;</span></span>
+<span id="cb3-182"><a href="#cb3-182" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 7 automatic filters</span></span>
+<span id="cb3-183"><a href="#cb3-183" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Indication (gt); Plot Indication (plot)</span></span>
+<span id="cb3-184"><a href="#cb3-184" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-185"><a href="#cb3-185" tabindex="-1"></a><span class="co">#&gt; $summarise_treatment</span></span>
+<span id="cb3-186"><a href="#cb3-186" tabindex="-1"></a><span class="co">#&gt; Treatments (OmopViewer panel)</span></span>
+<span id="cb3-187"><a href="#cb3-187" tabindex="-1"></a><span class="co">#&gt; • icon: disease</span></span>
+<span id="cb3-188"><a href="#cb3-188" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_treatment&gt;</span></span>
+<span id="cb3-189"><a href="#cb3-189" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 7 automatic filters</span></span>
+<span id="cb3-190"><a href="#cb3-190" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Treatments (gt); Plot Treatment (plot)</span></span>
+<span id="cb3-191"><a href="#cb3-191" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-192"><a href="#cb3-192" tabindex="-1"></a><span class="co">#&gt; $default</span></span>
+<span id="cb3-193"><a href="#cb3-193" tabindex="-1"></a><span class="co">#&gt; &lt;result_type&gt; (OmopViewer panel)</span></span>
+<span id="cb3-194"><a href="#cb3-194" tabindex="-1"></a><span class="co">#&gt; • icon: folder</span></span>
+<span id="cb3-195"><a href="#cb3-195" tabindex="-1"></a><span class="co">#&gt; • data: -no data-</span></span>
+<span id="cb3-196"><a href="#cb3-196" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
+<span id="cb3-197"><a href="#cb3-197" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table (gt)</span></span></code></pre></div>
+<div id="panel-details-stucture" class="section level3">
+<h3>Panel details stucture</h3>
+<p>Panel details print shows:</p>
+<ul>
+<li>Title: title of the panel.</li>
+<li>Icon: the icon of the panel (see <a href="https://fontawesome.com/search?ic=free" class="uri">https://fontawesome.com/search?ic=free</a>).</li>
+<li>Data: how data is filtered: it contains the settings to filter for
+from the original result.</li>
+<li>Filters: which buttons (<code>shinyWidgets::pickerInput</code>) will
+be created to filter the result.</li>
+<li>Content: the different visualisations that are going to be displayed
+in that panel.</li>
+</ul>
+<p>More details on the internal structure and how to define new panels
+is explained in <em>adding_new_panels</em>. To see the internal
+structure you can use <code>unclass</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">unclass</span>(<span class="fu">getPanel</span>(<span class="st">&quot;incidence&quot;</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; $title</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Incidence&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; $icon</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;chart-line&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; $data</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; $data$result_type</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; [1] &quot;incidence&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; $automatic_filters</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;group&quot;         &quot;strata&quot;        &quot;additional&quot;    &quot;settings&quot;     </span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; [5] &quot;variable_name&quot; &quot;estimate_name&quot;</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; $exclude_filters</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; [1] &quot;denominator_cohort_name&quot; &quot;incidence_end_date&quot;     </span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; $filters</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name$button_type</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pickerInput&quot;</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name$label</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; [1] &quot;CDM name&quot;</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name$column</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name$column_type</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; [1] &quot;main&quot;</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name$choices</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; [1] &quot;choices$&quot;</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name$selected</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; [1] &quot;selected$&quot;</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; $filters$cdm_name$multiple</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a><span class="co">#&gt; $content</span></span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a><span class="co">#&gt; $content$tidy</span></span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a><span class="co">#&gt; $content$tidy$title</span></span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Tidy&quot;</span></span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a><span class="co">#&gt; $content$tidy$output_type</span></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a><span class="co">#&gt; [1] &quot;DT&quot;</span></span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a><span class="co">#&gt; $content$tidy$render</span></span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a><span class="co">#&gt; [1] &quot;tidyDT(&lt;filtered_data&gt;, input$columns, input$pivot_estimates)&quot;</span></span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters</span></span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$columns</span></span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$columns$button_type</span></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pickerInput&quot;</span></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$columns$label</span></span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Columns&quot;</span></span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$columns$choices</span></span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;       &quot;&lt;group&gt;&quot;        &quot;&lt;strata&gt;&quot;       &quot;&lt;additional&gt;&quot;  </span></span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a><span class="co">#&gt; [5] &quot;&lt;settings&gt;&quot;     &quot;variable_name&quot;  &quot;variable_level&quot;</span></span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$columns$selected</span></span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;       &quot;&lt;group&gt;&quot;        &quot;&lt;strata&gt;&quot;       &quot;&lt;additional&gt;&quot;  </span></span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a><span class="co">#&gt; [5] &quot;variable_name&quot;  &quot;variable_level&quot;</span></span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$columns$multiple</span></span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$pivot_estimates</span></span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$pivot_estimates$button_type</span></span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a><span class="co">#&gt; [1] &quot;checkbox&quot;</span></span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$pivot_estimates$label</span></span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Pivot estimates&quot;</span></span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a><span class="co">#&gt; $content$tidy$filters$pivot_estimates$value</span></span>
+<span id="cb4-84"><a href="#cb4-84" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb4-85"><a href="#cb4-85" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-86"><a href="#cb4-86" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-87"><a href="#cb4-87" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-88"><a href="#cb4-88" tabindex="-1"></a><span class="co">#&gt; $content$tidy$download</span></span>
+<span id="cb4-89"><a href="#cb4-89" tabindex="-1"></a><span class="co">#&gt; $content$tidy$download$label</span></span>
+<span id="cb4-90"><a href="#cb4-90" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Download csv&quot;</span></span>
+<span id="cb4-91"><a href="#cb4-91" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-92"><a href="#cb4-92" tabindex="-1"></a><span class="co">#&gt; $content$tidy$download$render</span></span>
+<span id="cb4-93"><a href="#cb4-93" tabindex="-1"></a><span class="co">#&gt; [1] &quot;&lt;filtered_data&gt; |&gt;\n    omopgenerics::tidy() |&gt;\n    readr::write_csv(file = file)&quot;</span></span>
+<span id="cb4-94"><a href="#cb4-94" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-95"><a href="#cb4-95" tabindex="-1"></a><span class="co">#&gt; $content$tidy$download$filename</span></span>
+<span id="cb4-96"><a href="#cb4-96" tabindex="-1"></a><span class="co">#&gt; [1] &quot;tidy_results.csv&quot;</span></span>
+<span id="cb4-97"><a href="#cb4-97" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-98"><a href="#cb4-98" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-99"><a href="#cb4-99" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-100"><a href="#cb4-100" tabindex="-1"></a><span class="co">#&gt; $content$table</span></span>
+<span id="cb4-101"><a href="#cb4-101" tabindex="-1"></a><span class="co">#&gt; $content$table$title</span></span>
+<span id="cb4-102"><a href="#cb4-102" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Table Incidence&quot;</span></span>
+<span id="cb4-103"><a href="#cb4-103" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-104"><a href="#cb4-104" tabindex="-1"></a><span class="co">#&gt; $content$table$output_type</span></span>
+<span id="cb4-105"><a href="#cb4-105" tabindex="-1"></a><span class="co">#&gt; [1] &quot;gt&quot;</span></span>
+<span id="cb4-106"><a href="#cb4-106" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-107"><a href="#cb4-107" tabindex="-1"></a><span class="co">#&gt; $content$table$render</span></span>
+<span id="cb4-108"><a href="#cb4-108" tabindex="-1"></a><span class="co">#&gt; [1] &quot;res &lt;- &lt;filtered_data&gt;\n      res |&gt;\n      IncidencePrevalence::tableIncidence(\n      header = input$header,\n      groupColumn = input$group_column,\n      hide = input$hide,\n      settingsColumn = omopgenerics::settingsColumns(res)\n      )&quot;</span></span>
+<span id="cb4-109"><a href="#cb4-109" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-110"><a href="#cb4-110" tabindex="-1"></a><span class="co">#&gt; $content$table$filters</span></span>
+<span id="cb4-111"><a href="#cb4-111" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$none</span></span>
+<span id="cb4-112"><a href="#cb4-112" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$none$button_type</span></span>
+<span id="cb4-113"><a href="#cb4-113" tabindex="-1"></a><span class="co">#&gt; [1] &quot;rank_list&quot;</span></span>
+<span id="cb4-114"><a href="#cb4-114" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-115"><a href="#cb4-115" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$none$text</span></span>
+<span id="cb4-116"><a href="#cb4-116" tabindex="-1"></a><span class="co">#&gt; [1] &quot;None&quot;</span></span>
+<span id="cb4-117"><a href="#cb4-117" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-118"><a href="#cb4-118" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$none$labels</span></span>
+<span id="cb4-119"><a href="#cb4-119" tabindex="-1"></a><span class="co">#&gt; [1] &quot;&lt;strata&gt;&quot;              &quot;incidence_start_date&quot;  &quot;incidence_end_date&quot;   </span></span>
+<span id="cb4-120"><a href="#cb4-120" tabindex="-1"></a><span class="co">#&gt; [4] &quot;denominator_age_group&quot; &quot;denominator_sex&quot;      </span></span>
+<span id="cb4-121"><a href="#cb4-121" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-122"><a href="#cb4-122" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-123"><a href="#cb4-123" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$header</span></span>
+<span id="cb4-124"><a href="#cb4-124" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$header$button_type</span></span>
+<span id="cb4-125"><a href="#cb4-125" tabindex="-1"></a><span class="co">#&gt; [1] &quot;rank_list&quot;</span></span>
+<span id="cb4-126"><a href="#cb4-126" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-127"><a href="#cb4-127" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$header$text</span></span>
+<span id="cb4-128"><a href="#cb4-128" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Header&quot;</span></span>
+<span id="cb4-129"><a href="#cb4-129" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-130"><a href="#cb4-130" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$header$labels</span></span>
+<span id="cb4-131"><a href="#cb4-131" tabindex="-1"></a><span class="co">#&gt; [1] &quot;estimate_name&quot;</span></span>
+<span id="cb4-132"><a href="#cb4-132" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-133"><a href="#cb4-133" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-134"><a href="#cb4-134" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$group_column</span></span>
+<span id="cb4-135"><a href="#cb4-135" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$group_column$button_type</span></span>
+<span id="cb4-136"><a href="#cb4-136" tabindex="-1"></a><span class="co">#&gt; [1] &quot;rank_list&quot;</span></span>
+<span id="cb4-137"><a href="#cb4-137" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-138"><a href="#cb4-138" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$group_column$text</span></span>
+<span id="cb4-139"><a href="#cb4-139" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Group columns&quot;</span></span>
+<span id="cb4-140"><a href="#cb4-140" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-141"><a href="#cb4-141" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$group_column$labels</span></span>
+<span id="cb4-142"><a href="#cb4-142" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;            &quot;outcome_cohort_name&quot;</span></span>
+<span id="cb4-143"><a href="#cb4-143" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-144"><a href="#cb4-144" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-145"><a href="#cb4-145" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$hide</span></span>
+<span id="cb4-146"><a href="#cb4-146" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$hide$button_type</span></span>
+<span id="cb4-147"><a href="#cb4-147" tabindex="-1"></a><span class="co">#&gt; [1] &quot;rank_list&quot;</span></span>
+<span id="cb4-148"><a href="#cb4-148" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-149"><a href="#cb4-149" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$hide$text</span></span>
+<span id="cb4-150"><a href="#cb4-150" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hide&quot;</span></span>
+<span id="cb4-151"><a href="#cb4-151" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-152"><a href="#cb4-152" tabindex="-1"></a><span class="co">#&gt; $content$table$filters$hide$labels</span></span>
+<span id="cb4-153"><a href="#cb4-153" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;denominator_cohort_name&quot;             </span></span>
+<span id="cb4-154"><a href="#cb4-154" tabindex="-1"></a><span class="co">#&gt;  [2] &quot;analysis_interval&quot;                   </span></span>
+<span id="cb4-155"><a href="#cb4-155" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;analysis_censor_cohort_name&quot;         </span></span>
+<span id="cb4-156"><a href="#cb4-156" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;analysis_complete_database_intervals&quot;</span></span>
+<span id="cb4-157"><a href="#cb4-157" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;analysis_outcome_washout&quot;            </span></span>
+<span id="cb4-158"><a href="#cb4-158" tabindex="-1"></a><span class="co">#&gt;  [6] &quot;analysis_repeated_events&quot;            </span></span>
+<span id="cb4-159"><a href="#cb4-159" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;denominator_days_prior_observation&quot;  </span></span>
+<span id="cb4-160"><a href="#cb4-160" tabindex="-1"></a><span class="co">#&gt;  [8] &quot;denominator_end_date&quot;                </span></span>
+<span id="cb4-161"><a href="#cb4-161" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;denominator_requirements_at_entry&quot;   </span></span>
+<span id="cb4-162"><a href="#cb4-162" tabindex="-1"></a><span class="co">#&gt; [10] &quot;denominator_start_date&quot;              </span></span>
+<span id="cb4-163"><a href="#cb4-163" tabindex="-1"></a><span class="co">#&gt; [11] &quot;denominator_target_cohort_name&quot;      </span></span>
+<span id="cb4-164"><a href="#cb4-164" tabindex="-1"></a><span class="co">#&gt; [12] &quot;denominator_time_at_risk&quot;            </span></span>
+<span id="cb4-165"><a href="#cb4-165" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-166"><a href="#cb4-166" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-167"><a href="#cb4-167" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-168"><a href="#cb4-168" tabindex="-1"></a><span class="co">#&gt; $content$table$download</span></span>
+<span id="cb4-169"><a href="#cb4-169" tabindex="-1"></a><span class="co">#&gt; $content$table$download$label</span></span>
+<span id="cb4-170"><a href="#cb4-170" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Download table&quot;</span></span>
+<span id="cb4-171"><a href="#cb4-171" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-172"><a href="#cb4-172" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filters</span></span>
+<span id="cb4-173"><a href="#cb4-173" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filters$format</span></span>
+<span id="cb4-174"><a href="#cb4-174" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filters$format$button_type</span></span>
+<span id="cb4-175"><a href="#cb4-175" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pickerInput&quot;</span></span>
+<span id="cb4-176"><a href="#cb4-176" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-177"><a href="#cb4-177" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filters$format$label</span></span>
+<span id="cb4-178"><a href="#cb4-178" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Format&quot;</span></span>
+<span id="cb4-179"><a href="#cb4-179" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-180"><a href="#cb4-180" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filters$format$choices</span></span>
+<span id="cb4-181"><a href="#cb4-181" tabindex="-1"></a><span class="co">#&gt; [1] &quot;docx&quot; &quot;png&quot;  &quot;pdf&quot;  &quot;html&quot;</span></span>
+<span id="cb4-182"><a href="#cb4-182" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-183"><a href="#cb4-183" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filters$format$selected</span></span>
+<span id="cb4-184"><a href="#cb4-184" tabindex="-1"></a><span class="co">#&gt; [1] &quot;docx&quot;</span></span>
+<span id="cb4-185"><a href="#cb4-185" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-186"><a href="#cb4-186" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filters$format$multiple</span></span>
+<span id="cb4-187"><a href="#cb4-187" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span>
+<span id="cb4-188"><a href="#cb4-188" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-189"><a href="#cb4-189" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-190"><a href="#cb4-190" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-191"><a href="#cb4-191" tabindex="-1"></a><span class="co">#&gt; $content$table$download$render</span></span>
+<span id="cb4-192"><a href="#cb4-192" tabindex="-1"></a><span class="co">#&gt; [1] &quot;gt::gtsave(&lt;rendered_data&gt;, file)&quot;</span></span>
+<span id="cb4-193"><a href="#cb4-193" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-194"><a href="#cb4-194" tabindex="-1"></a><span class="co">#&gt; $content$table$download$filename</span></span>
+<span id="cb4-195"><a href="#cb4-195" tabindex="-1"></a><span class="co">#&gt; [1] &quot;paste0(\&quot;table_incidence.\&quot;, input$format)&quot;</span></span>
+<span id="cb4-196"><a href="#cb4-196" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-197"><a href="#cb4-197" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-198"><a href="#cb4-198" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-199"><a href="#cb4-199" tabindex="-1"></a><span class="co">#&gt; $content$plot</span></span>
+<span id="cb4-200"><a href="#cb4-200" tabindex="-1"></a><span class="co">#&gt; $content$plot$title</span></span>
+<span id="cb4-201"><a href="#cb4-201" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Plot Incidence&quot;</span></span>
+<span id="cb4-202"><a href="#cb4-202" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-203"><a href="#cb4-203" tabindex="-1"></a><span class="co">#&gt; $content$plot$output_type</span></span>
+<span id="cb4-204"><a href="#cb4-204" tabindex="-1"></a><span class="co">#&gt; [1] &quot;plot&quot;</span></span>
+<span id="cb4-205"><a href="#cb4-205" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-206"><a href="#cb4-206" tabindex="-1"></a><span class="co">#&gt; $content$plot$render</span></span>
+<span id="cb4-207"><a href="#cb4-207" tabindex="-1"></a><span class="co">#&gt; [1] &quot;&lt;filtered_data&gt; |&gt;\n      IncidencePrevalence::plotIncidence(\n      x = input$x,\n      facet = input$facet,\n      colour = input$colour\n      )&quot;</span></span>
+<span id="cb4-208"><a href="#cb4-208" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-209"><a href="#cb4-209" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters</span></span>
+<span id="cb4-210"><a href="#cb4-210" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$x</span></span>
+<span id="cb4-211"><a href="#cb4-211" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$x$button_type</span></span>
+<span id="cb4-212"><a href="#cb4-212" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pickerInput&quot;</span></span>
+<span id="cb4-213"><a href="#cb4-213" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-214"><a href="#cb4-214" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$x$label</span></span>
+<span id="cb4-215"><a href="#cb4-215" tabindex="-1"></a><span class="co">#&gt; [1] &quot;x axis&quot;</span></span>
+<span id="cb4-216"><a href="#cb4-216" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-217"><a href="#cb4-217" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$x$choices</span></span>
+<span id="cb4-218"><a href="#cb4-218" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;     &quot;&lt;group&gt;&quot;      &quot;&lt;strata&gt;&quot;     &quot;&lt;additional&gt;&quot; &quot;&lt;settings&gt;&quot;  </span></span>
+<span id="cb4-219"><a href="#cb4-219" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-220"><a href="#cb4-220" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$x$selected</span></span>
+<span id="cb4-221"><a href="#cb4-221" tabindex="-1"></a><span class="co">#&gt; [1] &quot;incidence_start_date&quot;</span></span>
+<span id="cb4-222"><a href="#cb4-222" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-223"><a href="#cb4-223" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$x$multiple</span></span>
+<span id="cb4-224"><a href="#cb4-224" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span>
+<span id="cb4-225"><a href="#cb4-225" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-226"><a href="#cb4-226" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-227"><a href="#cb4-227" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$facet</span></span>
+<span id="cb4-228"><a href="#cb4-228" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$facet$button_type</span></span>
+<span id="cb4-229"><a href="#cb4-229" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pickerInput&quot;</span></span>
+<span id="cb4-230"><a href="#cb4-230" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-231"><a href="#cb4-231" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$facet$label</span></span>
+<span id="cb4-232"><a href="#cb4-232" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Facet&quot;</span></span>
+<span id="cb4-233"><a href="#cb4-233" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-234"><a href="#cb4-234" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$facet$choices</span></span>
+<span id="cb4-235"><a href="#cb4-235" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;     &quot;&lt;group&gt;&quot;      &quot;&lt;strata&gt;&quot;     &quot;&lt;additional&gt;&quot; &quot;&lt;settings&gt;&quot;  </span></span>
+<span id="cb4-236"><a href="#cb4-236" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-237"><a href="#cb4-237" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$facet$selected</span></span>
+<span id="cb4-238"><a href="#cb4-238" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;</span></span>
+<span id="cb4-239"><a href="#cb4-239" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-240"><a href="#cb4-240" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$facet$multiple</span></span>
+<span id="cb4-241"><a href="#cb4-241" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb4-242"><a href="#cb4-242" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-243"><a href="#cb4-243" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-244"><a href="#cb4-244" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$colour</span></span>
+<span id="cb4-245"><a href="#cb4-245" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$colour$button_type</span></span>
+<span id="cb4-246"><a href="#cb4-246" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pickerInput&quot;</span></span>
+<span id="cb4-247"><a href="#cb4-247" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-248"><a href="#cb4-248" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$colour$label</span></span>
+<span id="cb4-249"><a href="#cb4-249" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Colour&quot;</span></span>
+<span id="cb4-250"><a href="#cb4-250" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-251"><a href="#cb4-251" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$colour$choices</span></span>
+<span id="cb4-252"><a href="#cb4-252" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cdm_name&quot;     &quot;&lt;group&gt;&quot;      &quot;&lt;strata&gt;&quot;     &quot;&lt;additional&gt;&quot; &quot;&lt;settings&gt;&quot;  </span></span>
+<span id="cb4-253"><a href="#cb4-253" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-254"><a href="#cb4-254" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$colour$selected</span></span>
+<span id="cb4-255"><a href="#cb4-255" tabindex="-1"></a><span class="co">#&gt; [1] &quot;outcome_cohort_name&quot;</span></span>
+<span id="cb4-256"><a href="#cb4-256" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-257"><a href="#cb4-257" tabindex="-1"></a><span class="co">#&gt; $content$plot$filters$colour$multiple</span></span>
+<span id="cb4-258"><a href="#cb4-258" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb4-259"><a href="#cb4-259" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-260"><a href="#cb4-260" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-261"><a href="#cb4-261" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-262"><a href="#cb4-262" tabindex="-1"></a><span class="co">#&gt; $content$plot$download</span></span>
+<span id="cb4-263"><a href="#cb4-263" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$label</span></span>
+<span id="cb4-264"><a href="#cb4-264" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Download plot&quot;</span></span>
+<span id="cb4-265"><a href="#cb4-265" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-266"><a href="#cb4-266" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters</span></span>
+<span id="cb4-267"><a href="#cb4-267" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$width</span></span>
+<span id="cb4-268"><a href="#cb4-268" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$width$button_type</span></span>
+<span id="cb4-269"><a href="#cb4-269" tabindex="-1"></a><span class="co">#&gt; [1] &quot;numericInput&quot;</span></span>
+<span id="cb4-270"><a href="#cb4-270" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-271"><a href="#cb4-271" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$width$label</span></span>
+<span id="cb4-272"><a href="#cb4-272" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Width&quot;</span></span>
+<span id="cb4-273"><a href="#cb4-273" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-274"><a href="#cb4-274" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$width$value</span></span>
+<span id="cb4-275"><a href="#cb4-275" tabindex="-1"></a><span class="co">#&gt; [1] 15</span></span>
+<span id="cb4-276"><a href="#cb4-276" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-277"><a href="#cb4-277" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-278"><a href="#cb4-278" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$height</span></span>
+<span id="cb4-279"><a href="#cb4-279" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$height$button_type</span></span>
+<span id="cb4-280"><a href="#cb4-280" tabindex="-1"></a><span class="co">#&gt; [1] &quot;numericInput&quot;</span></span>
+<span id="cb4-281"><a href="#cb4-281" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-282"><a href="#cb4-282" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$height$label</span></span>
+<span id="cb4-283"><a href="#cb4-283" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Height&quot;</span></span>
+<span id="cb4-284"><a href="#cb4-284" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-285"><a href="#cb4-285" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$height$value</span></span>
+<span id="cb4-286"><a href="#cb4-286" tabindex="-1"></a><span class="co">#&gt; [1] 15</span></span>
+<span id="cb4-287"><a href="#cb4-287" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-288"><a href="#cb4-288" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-289"><a href="#cb4-289" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$units</span></span>
+<span id="cb4-290"><a href="#cb4-290" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$units$button_type</span></span>
+<span id="cb4-291"><a href="#cb4-291" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pickerInput&quot;</span></span>
+<span id="cb4-292"><a href="#cb4-292" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-293"><a href="#cb4-293" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$units$label</span></span>
+<span id="cb4-294"><a href="#cb4-294" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Units&quot;</span></span>
+<span id="cb4-295"><a href="#cb4-295" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-296"><a href="#cb4-296" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$units$selected</span></span>
+<span id="cb4-297"><a href="#cb4-297" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cm&quot;</span></span>
+<span id="cb4-298"><a href="#cb4-298" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-299"><a href="#cb4-299" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$units$choices</span></span>
+<span id="cb4-300"><a href="#cb4-300" tabindex="-1"></a><span class="co">#&gt; [1] &quot;px&quot;   &quot;cm&quot;   &quot;inch&quot;</span></span>
+<span id="cb4-301"><a href="#cb4-301" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-302"><a href="#cb4-302" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$units$multiple</span></span>
+<span id="cb4-303"><a href="#cb4-303" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span>
+<span id="cb4-304"><a href="#cb4-304" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-305"><a href="#cb4-305" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-306"><a href="#cb4-306" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$dpi</span></span>
+<span id="cb4-307"><a href="#cb4-307" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$dpi$button_type</span></span>
+<span id="cb4-308"><a href="#cb4-308" tabindex="-1"></a><span class="co">#&gt; [1] &quot;numericInput&quot;</span></span>
+<span id="cb4-309"><a href="#cb4-309" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-310"><a href="#cb4-310" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$dpi$label</span></span>
+<span id="cb4-311"><a href="#cb4-311" tabindex="-1"></a><span class="co">#&gt; [1] &quot;DPI&quot;</span></span>
+<span id="cb4-312"><a href="#cb4-312" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-313"><a href="#cb4-313" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filters$dpi$value</span></span>
+<span id="cb4-314"><a href="#cb4-314" tabindex="-1"></a><span class="co">#&gt; [1] 300</span></span>
+<span id="cb4-315"><a href="#cb4-315" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-316"><a href="#cb4-316" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-317"><a href="#cb4-317" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-318"><a href="#cb4-318" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$render</span></span>
+<span id="cb4-319"><a href="#cb4-319" tabindex="-1"></a><span class="co">#&gt; [1] &quot;plt &lt;- &lt;rendered_data&gt;\n        ggplot2::ggsave(\n          filename = file,\n          plot = plt,\n          width = as.numeric(input$width),\n          height = as.numeric(input$height),\n          units = input$units,\n          dpi = as.numeric(input$dpi)\n        )&quot;</span></span>
+<span id="cb4-320"><a href="#cb4-320" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-321"><a href="#cb4-321" tabindex="-1"></a><span class="co">#&gt; $content$plot$download$filename</span></span>
+<span id="cb4-322"><a href="#cb4-322" tabindex="-1"></a><span class="co">#&gt; [1] &quot;plot_incidence.png&quot;</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
