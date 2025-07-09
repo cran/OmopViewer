@@ -340,86 +340,405 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>In this vignette we show the basis to create shiny apps. To do so we
-will use the mock results provided by the package:</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This vignette shows how to create static <em>Shiny apps</em> using
+the <code>OmopViewer</code> package. These static shiny apps are
+separated projects with their own <code>ui</code>, <code>server</code>,
+<code>global</code> and files to pre-process the results that later can
+easily later be customised and deployed. This functionality is adequate
+if what you are willing is to deploy a shiny, customise it later and/or
+be able to access this shiny app in the future. If what you want is to
+visualise the data briefly and you do not need to access to the shiny in
+the future, edit it or deploy it maybe the <a href="dynamic_app.Rmd">Dynamic app</a> functionality is what are you
+searching for.</p>
+</div>
+<div id="loading-necessary-libraries-and-data" class="section level2">
+<h2>Loading Necessary Libraries and Data</h2>
+<p>In this vignette we will use simply to packages:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(OmopViewer)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>omopViewerResults</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 39,264 × 13</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt;    result_id cdm_name            group_name group_level strata_name strata_level</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt;        &lt;int&gt; &lt;chr&gt;               &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;       </span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;  1         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt;  2         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;  3         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt;  4         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt;  5         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;  6         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt;  7         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt;  8         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt;  9         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; 10         1 synthea-covid19-20… overall    overall     overall     overall     </span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 39,254 more rows</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 7 more variables: variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; #   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; #   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="fu">summary</span>(omopViewerResults)</span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; A summarised_result object with 39264 rows, 95 different result_id, 1 different</span></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; cdm names, and 44 settings.</span></span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; CDM names: synthea-covid19-200k.</span></span>
-<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; Settings: result_type, package_name, package_version, group, strata,</span></span>
-<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; additional, min_cell_count, analysis, analysis_censor_cohort_name,</span></span>
-<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; analysis_complete_database_intervals, analysis_full_contribution,</span></span>
-<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; analysis_outcome_washout, analysis_repeated_events, analysis_type, censor_date,</span></span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; cohort_definition_id, cohort_table_name, denominator_age_group, …, type, and</span></span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; unknown_indication_table.</span></span></code></pre></div>
-<p>Let’s use a subset of the default result data set:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> omopViewerResults <span class="sc">|&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  omopgenerics<span class="sc">::</span><span class="fu">filterSettings</span>(</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    result_type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;summarise_omop_snapshot&quot;</span>, <span class="st">&quot;summarise_characteristics&quot;</span>, <span class="st">&quot;incidence&quot;</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  )</span></code></pre></div>
-<p>Using the default parameters you only have to provide a directory and
-a <summarised_result> object.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">exportStaticApp</span>(<span class="at">result =</span> result, <span class="at">directory =</span> <span class="fu">tempdir</span>())</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; ℹ Processing data</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; ✔ Data processed: 3 panels idenfied: `summarise_omop_snapshot`,</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;   `summarise_characteristics`, and `incidence`.</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; ℹ Creating shiny from provided data</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; `analysis`, `analysis_full_contribution`, `analysis_type`, `censor_date`,</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; `cohort_definition_id`, `cohort_table_name`, `gap_era`, `incident`,</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; `index_date`, `indication_cohort_name`, `interval`, `mutually_exclusive`,</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; `overlap_by`, `prior_drug_observation`, `prior_use_washout`,</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; `restrict_incident`, `restrict_to_first_discontinuation`,</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; `restrict_to_first_entry`, …, `type`, and `unknown_indication_table` eliminated</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; from settings as all elements are NA.</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; ✔ Shiny created in:</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;   /var/folders/pl/k11lm9710hlgl02nvzx4z9wr0000gp/T//RtmpRMcqhi/shiny</span></span></code></pre></div>
-<p>The panels that will be created are defined by the
-<code>panelDetails</code> argument. By default, a tab is created by each
-<code>result_type</code> of the result object. The default tab
-<code>getPanel(&quot;default&quot;)</code> is used if no tab is defined for that
-<code>result_type</code> in <strong>omopViewerPanels</strong>. Let’s see
-the default <code>panelDetails</code>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>panelDetails <span class="ot">&lt;-</span> <span class="fu">panelDetailsFromResult</span>(result)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>panelDetails</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; $summarise_omop_snapshot</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; Snapshot (OmopViewer panel)</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; • icon: clipboard-list</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_omop_snapshot&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 1 automatic filters</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Snapshot (gt)</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; $summarise_characteristics</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; Cohort Characteristics (OmopViewer panel)</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; • icon: users-gear</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;summarise_characteristics&gt;</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 4 automatic filters</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Characteristics (gt); Plot Characteristics (plot)</span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; $incidence</span></span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; Incidence (OmopViewer panel)</span></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; • icon: chart-line</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; • data: result_type: &lt;incidence&gt;</span></span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; • filters: 1 filters + 6 automatic filters</span></span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; • content: Tidy (DT); Table Incidence (gt); Plot Incidence (plot)</span></span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(omopgenerics, <span class="at">warn.conflicts =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(shiny)</span></code></pre></div>
+<p>We’ll use the <code>omopViewerResults</code> mock data from this
+package for illustration:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Inspect the structure of the sample data</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">summary</span>(omopViewerResults)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; A summarised_result object with 39307 rows, 96 different result_id, 1 different</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; cdm names, and 44 settings.</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; CDM names: synthea-covid19-200k.</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; Settings: result_type, package_name, package_version, group, strata,</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; additional, min_cell_count, analysis, analysis_censor_cohort_name,</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; analysis_complete_database_intervals, analysis_full_contribution,</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; analysis_outcome_washout, analysis_repeated_events, analysis_type, censor_date,</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; cohort_definition_id, cohort_table_name, denominator_age_group, …, type, and</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; unknown_indication_table.</span></span></code></pre></div>
+</div>
+<div id="subsetting-the-data" class="section level2">
+<h2>Subsetting the Data</h2>
+<p>For this example, we’ll use a subset of the data containing specific
+result types:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> omopViewerResults <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">filterSettings</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    result_type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;summarise_omop_snapshot&quot;</span>, <span class="st">&quot;summarise_characteristics&quot;</span>, <span class="st">&quot;incidence&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  )</span></code></pre></div>
+<p>This filters the <code>omopViewerResults</code> data to include only
+entries where result_type is one of “summarise_omop_snapshot”,
+“summarise_characteristics”, or “incidence”.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">summary</span>(result)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; A summarised_result object with 1245 rows, 20 different result_id, 1 different</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; cdm names, and 20 settings.</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; CDM names: synthea-covid19-200k.</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; Settings: result_type, package_name, package_version, group, strata,</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; additional, min_cell_count, analysis_censor_cohort_name,</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; analysis_complete_database_intervals, analysis_outcome_washout,</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; analysis_repeated_events, denominator_age_group,</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; denominator_days_prior_observation, denominator_end_date,</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; denominator_requirements_at_entry, denominator_sex, denominator_start_date,</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; denominator_target_cohort_name, denominator_time_at_risk, and table_name.</span></span></code></pre></div>
+</div>
+<div id="generating-the-shiny-app" class="section level2">
+<h2>Generating the Shiny App</h2>
+<p>The exportStaticApp function generates a Shiny app from the prepared
+data. Using the default parameters, it only requires a directory to save
+the app and the processed data (a <summarised_result> object):</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">tempdir</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">exportStaticApp</span>(<span class="at">result =</span> result, <span class="at">directory =</span> dir)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; ℹ Processing data</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; ✔ Data processed: 3 panels idenfied: `summarise_omop_snapshot`,</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;   `summarise_characteristics`, and `incidence`.</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; ℹ Creating shiny from provided data</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; ✔ Shiny created in:</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;   /var/folders/pl/k11lm9710hlgl02nvzx4z9wr0000gp/T//RtmpnCIQ1o/shiny</span></span></code></pre></div>
+<p>Note that by default if executed in an interactive environment like
+<em>R Studio</em> the project will be opened in a separated window. Use
+<code>open = FALSE</code> if you do not wish to open the shiny app after
+generating it.</p>
+<div id="generated-shiny-app" class="section level3">
+<h3>Generated shiny app</h3>
+<p>See that this created a new project <strong>shiny</strong> in the
+specified directory along with some files:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">list.files</span>(<span class="at">path =</span> here<span class="sc">::</span><span class="fu">here</span>(dir, <span class="st">&quot;shiny&quot;</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; background.md</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; data/preprocess.R</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; data/results.csv</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; functions.R</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; global.R</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; server.R</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; shiny.Rproj</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; ui.R</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; www/hds_logo.svg</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; www/ohdsi_logo.svg</span></span></code></pre></div>
+<ul>
+<li><p><code>background.R</code> is only generated if background
+argument is set to <code>TRUE</code> and is used to customise the
+landing page of the shiny app.</p></li>
+<li><p><code>data</code> folder contains the raw result object
+<code>results.csv</code> and the script to process the data
+<code>preprocess.R</code>.</p></li>
+<li><p><code>funcitons.R</code> contains several functions that are used
+internally in the shiny app.</p></li>
+<li><p><code>global.R</code>, <code>ui.R</code>, and
+<code>server.R</code> define the shiny app itself.</p></li>
+<li><p><code>www</code> contains images and logos used in the shiny app,
+by default <code>hds_logo.svg</code> and
+<code>ohdsi_logo.svg</code>.</p></li>
+</ul>
+</div>
+</div>
+<div id="panels-generated-paneldetails" class="section level2">
+<h2>Panels generated (panelDetails)</h2>
+<p>The shiny generated contained a total of 3 panels, this was
+determined by the argument <code>panelDetails</code>. Each element in
+<code>panelDetails</code> will be used to create a different panel in
+the shiny app. The package contains in total 28 predefined panels:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>omopViewerPanels</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; $summarise_omop_snapshot</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; [34mSnapshot[0m (OmopViewer panel)</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m clipboard-list</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_omop_snapshot&gt;</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 1 automatic filters</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Snapshot[0m ([3mgt[0m)</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; $summarise_observation_period</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; [34mObservation period[0m (OmopViewer panel)</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m eye</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_observation_period&gt;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Observation period[0m ([3mgt[0m); [1;34mPlot Observation period[0m ([3mui[0m)</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; $summarise_clinical_records</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; [34mClinical records[0m (OmopViewer panel)</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m bars-staggered</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_clinical_records&gt;</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Clinical records[0m ([3mgt[0m)</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt; $summarise_record_count</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt; [34mRecord count[0m (OmopViewer panel)</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m signal</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_record_count&gt;</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mPlot record count[0m ([3mui[0m)</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt; $summarise_missing_data</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#&gt; [34mMissing data[0m (OmopViewer panel)</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m circle-exclamation</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_missing_data&gt;</span></span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Missing data[0m ([3mgt[0m)</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co">#&gt; $summarise_in_observation</span></span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a><span class="co">#&gt; [34mIn Observation[0m (OmopViewer panel)</span></span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m explosion</span></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_in_observation&gt;</span></span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mPlot in observation[0m ([3mui[0m)</span></span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a><span class="co">#&gt; $orphan_code_use</span></span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a><span class="co">#&gt; [34mOrphan codes[0m (OmopViewer panel)</span></span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m magnifying-glass-arrow-right</span></span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;orphan_code_use&gt;</span></span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Orphan codes[0m ([3mgt[0m)</span></span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a><span class="co">#&gt; $cohort_code_use</span></span>
+<span id="cb7-52"><a href="#cb7-52" tabindex="-1"></a><span class="co">#&gt; [34mCohort code use[0m (OmopViewer panel)</span></span>
+<span id="cb7-53"><a href="#cb7-53" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-column</span></span>
+<span id="cb7-54"><a href="#cb7-54" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;cohort_code_use&gt;</span></span>
+<span id="cb7-55"><a href="#cb7-55" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-56"><a href="#cb7-56" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Cohort code use[0m ([3mgt[0m)</span></span>
+<span id="cb7-57"><a href="#cb7-57" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-58"><a href="#cb7-58" tabindex="-1"></a><span class="co">#&gt; $code_use</span></span>
+<span id="cb7-59"><a href="#cb7-59" tabindex="-1"></a><span class="co">#&gt; [34mCode use[0m (OmopViewer panel)</span></span>
+<span id="cb7-60"><a href="#cb7-60" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-column</span></span>
+<span id="cb7-61"><a href="#cb7-61" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;code_use&gt;</span></span>
+<span id="cb7-62"><a href="#cb7-62" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-63"><a href="#cb7-63" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Code use[0m ([3mgt[0m)</span></span>
+<span id="cb7-64"><a href="#cb7-64" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-65"><a href="#cb7-65" tabindex="-1"></a><span class="co">#&gt; $achilles_code_use</span></span>
+<span id="cb7-66"><a href="#cb7-66" tabindex="-1"></a><span class="co">#&gt; [34mAchilles code use[0m (OmopViewer panel)</span></span>
+<span id="cb7-67"><a href="#cb7-67" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-column</span></span>
+<span id="cb7-68"><a href="#cb7-68" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;achilles_code_use&gt;</span></span>
+<span id="cb7-69"><a href="#cb7-69" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-70"><a href="#cb7-70" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Achilles code use[0m ([3mgt[0m)</span></span>
+<span id="cb7-71"><a href="#cb7-71" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-72"><a href="#cb7-72" tabindex="-1"></a><span class="co">#&gt; $unmapped_codes</span></span>
+<span id="cb7-73"><a href="#cb7-73" tabindex="-1"></a><span class="co">#&gt; [34mUnmapped codes[0m (OmopViewer panel)</span></span>
+<span id="cb7-74"><a href="#cb7-74" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-column</span></span>
+<span id="cb7-75"><a href="#cb7-75" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;unmapped_codes&gt;</span></span>
+<span id="cb7-76"><a href="#cb7-76" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-77"><a href="#cb7-77" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Unmapped codes[0m ([3mgt[0m)</span></span>
+<span id="cb7-78"><a href="#cb7-78" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-79"><a href="#cb7-79" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_overlap</span></span>
+<span id="cb7-80"><a href="#cb7-80" tabindex="-1"></a><span class="co">#&gt; [34mCohort Overlap[0m (OmopViewer panel)</span></span>
+<span id="cb7-81"><a href="#cb7-81" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m circle-half-stroke</span></span>
+<span id="cb7-82"><a href="#cb7-82" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_cohort_overlap&gt;</span></span>
+<span id="cb7-83"><a href="#cb7-83" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 5 automatic filters</span></span>
+<span id="cb7-84"><a href="#cb7-84" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Overlap[0m ([3mgt[0m); [1;34mPlot Overlap[0m ([3mui[0m)</span></span>
+<span id="cb7-85"><a href="#cb7-85" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-86"><a href="#cb7-86" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_count</span></span>
+<span id="cb7-87"><a href="#cb7-87" tabindex="-1"></a><span class="co">#&gt; [34mCohort Count[0m (OmopViewer panel)</span></span>
+<span id="cb7-88"><a href="#cb7-88" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m users</span></span>
+<span id="cb7-89"><a href="#cb7-89" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_cohort_count&gt;</span></span>
+<span id="cb7-90"><a href="#cb7-90" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-91"><a href="#cb7-91" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Counts[0m ([3mgt[0m); [1;34mPlot Counts[0m ([3mui[0m)</span></span>
+<span id="cb7-92"><a href="#cb7-92" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-93"><a href="#cb7-93" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_attrition</span></span>
+<span id="cb7-94"><a href="#cb7-94" tabindex="-1"></a><span class="co">#&gt; [34mCohort Attrition[0m (OmopViewer panel)</span></span>
+<span id="cb7-95"><a href="#cb7-95" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m layer-group</span></span>
+<span id="cb7-96"><a href="#cb7-96" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_cohort_attrition&gt;</span></span>
+<span id="cb7-97"><a href="#cb7-97" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 2 automatic filters</span></span>
+<span id="cb7-98"><a href="#cb7-98" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Attrition[0m ([3mgt[0m); [1;34mDiagram[0m ([3mgrViz[0m)</span></span>
+<span id="cb7-99"><a href="#cb7-99" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-100"><a href="#cb7-100" tabindex="-1"></a><span class="co">#&gt; $summarise_cohort_timing</span></span>
+<span id="cb7-101"><a href="#cb7-101" tabindex="-1"></a><span class="co">#&gt; [34mCohort Timing[0m (OmopViewer panel)</span></span>
+<span id="cb7-102"><a href="#cb7-102" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-simple</span></span>
+<span id="cb7-103"><a href="#cb7-103" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_cohort_timing&gt;</span></span>
+<span id="cb7-104"><a href="#cb7-104" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 2 automatic filters</span></span>
+<span id="cb7-105"><a href="#cb7-105" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Timing[0m ([3mgt[0m); [1;34mPlot Timing[0m ([3mui[0m)</span></span>
+<span id="cb7-106"><a href="#cb7-106" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-107"><a href="#cb7-107" tabindex="-1"></a><span class="co">#&gt; $summarise_characteristics</span></span>
+<span id="cb7-108"><a href="#cb7-108" tabindex="-1"></a><span class="co">#&gt; [34mCohort Characteristics[0m (OmopViewer panel)</span></span>
+<span id="cb7-109"><a href="#cb7-109" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m users-gear</span></span>
+<span id="cb7-110"><a href="#cb7-110" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_characteristics&gt;</span></span>
+<span id="cb7-111"><a href="#cb7-111" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-112"><a href="#cb7-112" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Characteristics[0m ([3mgt[0m); [1;34mPlot Characteristics[0m ([3mui[0m)</span></span>
+<span id="cb7-113"><a href="#cb7-113" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-114"><a href="#cb7-114" tabindex="-1"></a><span class="co">#&gt; $summarise_large_scale_characteristics</span></span>
+<span id="cb7-115"><a href="#cb7-115" tabindex="-1"></a><span class="co">#&gt; [34mLarge Scale Characteristics[0m (OmopViewer panel)</span></span>
+<span id="cb7-116"><a href="#cb7-116" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m arrow-up-right-dots</span></span>
+<span id="cb7-117"><a href="#cb7-117" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_large_scale_characteristics&gt;</span></span>
+<span id="cb7-118"><a href="#cb7-118" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-119"><a href="#cb7-119" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable[0m ([3mreactable[0m); [1;34mMost common codes[0m ([3mgt[0m); [1;34mPlot Compared[0m ([3mplotly[0m)</span></span>
+<span id="cb7-120"><a href="#cb7-120" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-121"><a href="#cb7-121" tabindex="-1"></a><span class="co">#&gt; $incidence</span></span>
+<span id="cb7-122"><a href="#cb7-122" tabindex="-1"></a><span class="co">#&gt; [34mIncidence[0m (OmopViewer panel)</span></span>
+<span id="cb7-123"><a href="#cb7-123" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-line</span></span>
+<span id="cb7-124"><a href="#cb7-124" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;incidence&gt;</span></span>
+<span id="cb7-125"><a href="#cb7-125" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-126"><a href="#cb7-126" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Incidence[0m ([3mgt[0m); [1;34mPlot Incidence[0m ([3mui[0m); [1;34mPlot population[0m ([3mui[0m)</span></span>
+<span id="cb7-127"><a href="#cb7-127" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-128"><a href="#cb7-128" tabindex="-1"></a><span class="co">#&gt; $incidence_attrition</span></span>
+<span id="cb7-129"><a href="#cb7-129" tabindex="-1"></a><span class="co">#&gt; [34mIncidence Attrition[0m (OmopViewer panel)</span></span>
+<span id="cb7-130"><a href="#cb7-130" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m layer-group</span></span>
+<span id="cb7-131"><a href="#cb7-131" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;incidence_attrition&gt;</span></span>
+<span id="cb7-132"><a href="#cb7-132" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 2 automatic filters</span></span>
+<span id="cb7-133"><a href="#cb7-133" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Incidence Attrition[0m ([3mgt[0m)</span></span>
+<span id="cb7-134"><a href="#cb7-134" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-135"><a href="#cb7-135" tabindex="-1"></a><span class="co">#&gt; $prevalence</span></span>
+<span id="cb7-136"><a href="#cb7-136" tabindex="-1"></a><span class="co">#&gt; [34mPrevalence[0m (OmopViewer panel)</span></span>
+<span id="cb7-137"><a href="#cb7-137" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-column</span></span>
+<span id="cb7-138"><a href="#cb7-138" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;prevalence&gt;</span></span>
+<span id="cb7-139"><a href="#cb7-139" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-140"><a href="#cb7-140" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Prevalence[0m ([3mgt[0m); [1;34mPlot Prevalence[0m ([3mui[0m); [1;34mPlot population[0m ([3mui[0m)</span></span>
+<span id="cb7-141"><a href="#cb7-141" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-142"><a href="#cb7-142" tabindex="-1"></a><span class="co">#&gt; $prevalence_attrition</span></span>
+<span id="cb7-143"><a href="#cb7-143" tabindex="-1"></a><span class="co">#&gt; [34mPrevalence Attrition[0m (OmopViewer panel)</span></span>
+<span id="cb7-144"><a href="#cb7-144" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m layer-group</span></span>
+<span id="cb7-145"><a href="#cb7-145" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;prevalence_attrition&gt;</span></span>
+<span id="cb7-146"><a href="#cb7-146" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 2 automatic filters</span></span>
+<span id="cb7-147"><a href="#cb7-147" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Prevalence Attrition[0m ([3mgt[0m)</span></span>
+<span id="cb7-148"><a href="#cb7-148" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-149"><a href="#cb7-149" tabindex="-1"></a><span class="co">#&gt; $summarise_dose_coverage</span></span>
+<span id="cb7-150"><a href="#cb7-150" tabindex="-1"></a><span class="co">#&gt; [34mDose coverage[0m (OmopViewer panel)</span></span>
+<span id="cb7-151"><a href="#cb7-151" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m pills</span></span>
+<span id="cb7-152"><a href="#cb7-152" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_dose_coverage&gt;</span></span>
+<span id="cb7-153"><a href="#cb7-153" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-154"><a href="#cb7-154" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Dose coverage[0m ([3mgt[0m)</span></span>
+<span id="cb7-155"><a href="#cb7-155" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-156"><a href="#cb7-156" tabindex="-1"></a><span class="co">#&gt; $summarise_proportion_of_patients_covered</span></span>
+<span id="cb7-157"><a href="#cb7-157" tabindex="-1"></a><span class="co">#&gt; [34mProportion of patients covered[0m (OmopViewer panel)</span></span>
+<span id="cb7-158"><a href="#cb7-158" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-gantt</span></span>
+<span id="cb7-159"><a href="#cb7-159" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_proportion_of_patients_covered&gt;</span></span>
+<span id="cb7-160"><a href="#cb7-160" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 3 automatic filters</span></span>
+<span id="cb7-161"><a href="#cb7-161" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable PPC[0m ([3mgt[0m); [1;34mPlot PPC[0m ([3mui[0m)</span></span>
+<span id="cb7-162"><a href="#cb7-162" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-163"><a href="#cb7-163" tabindex="-1"></a><span class="co">#&gt; $summarise_drug_restart</span></span>
+<span id="cb7-164"><a href="#cb7-164" tabindex="-1"></a><span class="co">#&gt; [34mDrug Restart[0m (OmopViewer panel)</span></span>
+<span id="cb7-165"><a href="#cb7-165" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-gantt</span></span>
+<span id="cb7-166"><a href="#cb7-166" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_drug_restart&gt;</span></span>
+<span id="cb7-167"><a href="#cb7-167" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 3 automatic filters</span></span>
+<span id="cb7-168"><a href="#cb7-168" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Drug Restart[0m ([3mgt[0m); [1;34mPlot Drug Restart[0m ([3mui[0m)</span></span>
+<span id="cb7-169"><a href="#cb7-169" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-170"><a href="#cb7-170" tabindex="-1"></a><span class="co">#&gt; $summarise_drug_utilisation</span></span>
+<span id="cb7-171"><a href="#cb7-171" tabindex="-1"></a><span class="co">#&gt; [34mDrug Utilisation[0m (OmopViewer panel)</span></span>
+<span id="cb7-172"><a href="#cb7-172" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m capsules</span></span>
+<span id="cb7-173"><a href="#cb7-173" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_drug_utilisation&gt;</span></span>
+<span id="cb7-174"><a href="#cb7-174" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-175"><a href="#cb7-175" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Drug Utilisation[0m ([3mgt[0m); [1;34mPlot Drug Utilisation[0m ([3mui[0m)</span></span>
+<span id="cb7-176"><a href="#cb7-176" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-177"><a href="#cb7-177" tabindex="-1"></a><span class="co">#&gt; $summarise_indication</span></span>
+<span id="cb7-178"><a href="#cb7-178" tabindex="-1"></a><span class="co">#&gt; [34mIndication[0m (OmopViewer panel)</span></span>
+<span id="cb7-179"><a href="#cb7-179" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m disease</span></span>
+<span id="cb7-180"><a href="#cb7-180" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_indication&gt;</span></span>
+<span id="cb7-181"><a href="#cb7-181" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 7 automatic filters</span></span>
+<span id="cb7-182"><a href="#cb7-182" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Indication[0m ([3mgt[0m); [1;34mPlot Indication[0m ([3mui[0m)</span></span>
+<span id="cb7-183"><a href="#cb7-183" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-184"><a href="#cb7-184" tabindex="-1"></a><span class="co">#&gt; $summarise_treatment</span></span>
+<span id="cb7-185"><a href="#cb7-185" tabindex="-1"></a><span class="co">#&gt; [34mTreatments[0m (OmopViewer panel)</span></span>
+<span id="cb7-186"><a href="#cb7-186" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m disease</span></span>
+<span id="cb7-187"><a href="#cb7-187" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_treatment&gt;</span></span>
+<span id="cb7-188"><a href="#cb7-188" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 7 automatic filters</span></span>
+<span id="cb7-189"><a href="#cb7-189" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Treatments[0m ([3mgt[0m); [1;34mPlot Treatment[0m ([3mui[0m)</span></span>
+<span id="cb7-190"><a href="#cb7-190" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-191"><a href="#cb7-191" tabindex="-1"></a><span class="co">#&gt; $default</span></span>
+<span id="cb7-192"><a href="#cb7-192" tabindex="-1"></a><span class="co">#&gt; [34m&lt;result_type&gt;[0m (OmopViewer panel)</span></span>
+<span id="cb7-193"><a href="#cb7-193" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m folder</span></span>
+<span id="cb7-194"><a href="#cb7-194" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m -no data-</span></span>
+<span id="cb7-195"><a href="#cb7-195" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-196"><a href="#cb7-196" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable[0m ([3mgt[0m)</span></span></code></pre></div>
+<p>Each panel is associated with a determined <code>result_type</code>
+as showed in the print. By default, the function
+<code>panelDetailsFromResult()</code> groups the results by
+<code>result_type</code> and displays each <code>result_type</code> in a
+separate panel, if a pre-build panel does not exist for that
+<code>result_type</code> then the <em>default</em> panel is used. In our
+case we have pre-build panels that are:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">panelDetailsFromResult</span>(<span class="at">result =</span> result)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; $summarise_omop_snapshot</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; [34mSnapshot[0m (OmopViewer panel)</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m clipboard-list</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_omop_snapshot&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 1 automatic filters</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Snapshot[0m ([3mgt[0m)</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; $summarise_characteristics</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; [34mCohort Characteristics[0m (OmopViewer panel)</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m users-gear</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_characteristics&gt;</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Characteristics[0m ([3mgt[0m); [1;34mPlot Characteristics[0m ([3mui[0m)</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; $incidence</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; [34mIncidence[0m (OmopViewer panel)</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-line</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;incidence&gt;</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Incidence[0m ([3mgt[0m); [1;34mPlot Incidence[0m ([3mui[0m); [1;34mPlot population[0m ([3mui[0m)</span></span></code></pre></div>
+<div id="understanding-panel-details-paneldetails" class="section level3">
+<h3>Understanding Panel Details (panelDetails)</h3>
+<p>Each panel’s entry contains key information:</p>
+<ol style="list-style-type: decimal">
+<li><p>Icon: Defines the icon displayed next to the panel, helping to
+visually distinguish between the different types of panels (e.g.,
+clipboard-list, chart-line …).</p></li>
+<li><p>Data: the fields used in data will be passed to
+<code>filterSettings()</code> function to determine the data that will
+be included in that panel. Usually <code>result_type</code> is the most
+common way
+(e.g. <code>panelDetails$data &lt;- list(result_type = &quot;incidence&quot;)</code>),
+but other fields can be used for example:
+<code>panelDetails$data &lt;- list(result_type = &quot;incidence&quot;, denominator_age_group = c(&quot;0 to 19&quot;, &quot;20 to 39&quot;))</code>
+would only include the results obtained by the following code:</p></li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>result <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">filterSettings</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    result_type <span class="sc">==</span> <span class="st">&quot;incidence&quot;</span> <span class="sc">&amp;</span> </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>      denominator_age_group <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;0 to 19&quot;</span>, <span class="st">&quot;20 to 39&quot;</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  ) </span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Filters: Filters (filters + automatic_filters) that allow users
+to refine the results within each panel. Each panel has its own
+defaults. For example, the default incidence panel includes
+automatic_filters: “settings”, “variable_name” and filters: “cdm_name”.
+This means that there will be a field for any column in settings, and
+variable_name and cdm_name columns.</p></li>
+<li><p>Content: Defines the types of content displayed in the panel,
+such as tables (DT, gt, reactable, …) and plots (ui, ggplot2, plotly,
+…). For example, the <code>summarise_omop_snapshot</code> panel includes
+a table displaying the snapshot data and a gt table generated from that
+snapshot data.</p></li>
+</ol>
+<p>All of these elements - icon, data, filters, and content - can be
+customised by the user if needed. See more details in the
+<strong>customised_panels</strong> vignette.</p>
+</div>
+</div>
+<div id="panel-structure-omopviewerpanels" class="section level2">
+<h2>Panel Structure (omopViewerPanels)</h2>
+<p>The arrangement of panels within the app is controlled by the
+<code>panelStructure</code> variable. This variable determines how
+panels are grouped into logical sections or tabs within the Shiny app.
+By default, the different panels are grouped by the package the produced
+the result object. In this case <em>OmopSketch</em>,
+<em>CohortCharacteristics</em> and <em>IncidencePrevalence</em>
+respectively.</p>
+<div id="customise-panelstructure" class="section level3">
+<h3>Customise panelStructure</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>ps1 <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="at">grp_1 =</span> <span class="fu">c</span>(<span class="st">&quot;summarise_omop_snapshot&quot;</span>, <span class="st">&quot;incidence&quot;</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">grp_2 =</span> <span class="fu">c</span>(<span class="st">&quot;summarise_characteristics&quot;</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="fu">exportStaticApp</span>(<span class="at">result =</span> result, <span class="at">directory =</span> <span class="fu">tempdir</span>(), <span class="at">panelStructure =</span> ps1)</span></code></pre></div>
+<p>This custom <code>panelStructure</code> groups the
+“summarise_omop_snapshot” and “incidence” result types together in
+grp_1, while placing the “summarise_characteristics” result type in
+grp_2. You can pass this custom structure to
+<code>exportStaticApp</code> to organize the panels according to your
+preference.</p>
+</div>
+</div>
 
 
 

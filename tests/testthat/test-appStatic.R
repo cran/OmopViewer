@@ -98,7 +98,7 @@ test_that("panelStructure argument works", {
   # default panelDetails
   panelDetails <- panelDetailsFromResult(result) |>
     populatePanelDetailsOptions(result)
-  panels <- writeUiPanels(panelDetails)
+  panels <- writeUiPanels(panelDetails, updateButtons = TRUE)
 
   # default panelStructure
   panelStructure <- as.list(names(panelDetails))
@@ -169,7 +169,7 @@ test_that("theme", {
   expect_identical(validateTheme(NULL), omopViewerThemes$default)
 
   # us a pre build theme
-  expect_identical(validateTheme("theme1"), omopViewerThemes$theme1)
+  expect_identical(validateTheme("sad_robot"), omopViewerThemes$sad_robot)
 
   # custom theme
   theme <- "bslib::bs_theme(bootswatch = 'sandstone',

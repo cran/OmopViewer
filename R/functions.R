@@ -45,9 +45,9 @@ backgroundCard <- function(fileName) {
     # content
     list(
       keys$header,
-      bslib::card_body(shiny::HTML(markdown::markdownToHTML(
+      bslib::card_body(shiny::HTML(suppressWarnings(markdown::markdownToHTML(
         file = tmpFile, fragment.only = TRUE
-      ))),
+      )))),
       keys$footer
     ) |>
       purrr::compact()
@@ -58,6 +58,9 @@ backgroundCard <- function(fileName) {
   do.call(bslib::card, arguments)
 }
 summaryCdmName <- function(data) {
+  if (length(data) == 0) {
+    return(list("<b>CDM names</b>" = ""))
+  }
   x <- data |>
     purrr::map(\(x) {
       x |>
@@ -77,6 +80,9 @@ summaryCdmName <- function(data) {
   list("<b>CDM names</b>" = x)
 }
 summaryPackages <- function(data) {
+  if (length(data) == 0) {
+    return(list("<b>Packages versions</b>" = ""))
+  }
   x <- data |>
     purrr::map(\(x) {
       x |>
@@ -132,6 +138,9 @@ summaryPackages <- function(data) {
     rlang::set_names(nm = paste0(lab, "Packages versions</b>"))
 }
 summaryMinCellCount <- function(data) {
+  if (length(data) == 0) {
+    return(list("<b>Min Cell Count Suppression</b>" = ""))
+  }
   x <- data |>
     purrr::map(\(x) {
       x |>
@@ -170,6 +179,9 @@ summaryMinCellCount <- function(data) {
     rlang::set_names(nm = paste0(lab, "Min Cell Count Suppression</b>"))
 }
 summaryPanels <- function(data) {
+  if (length(data) == 0) {
+    return(list("<b>Panels</b>" = ""))
+  }
   x <- data |>
     purrr::map(\(x) {
       if (nrow(x) == 0) {
@@ -250,22 +262,6 @@ simpleTable <- function(result,
     visOmopResults::formatTable(groupColumn = group)
   return(result)
 }
-prepareResult <- function(result, resultList) {
-  resultList |>
-    purrr::map(\(x) {
-      if (is.numeric(x)) {
-        resultId <- x
-        resultType <- NULL
-      } else if (is.character(x)) {
-        resultId <- NULL
-        resultType <- x
-      } else {
-        resultId <- x$result_id
-        resultType <- x$result_type
-      }
-      filterResult(result, resultId = resultId, resultType = resultType)
-    })
-}
 tidyDT <- function(x,
                    columns,
                    pivotEstimates) {
@@ -323,35 +319,23 @@ tidyDT <- function(x,
     options = list(searching = FALSE)
   )
 }
-filterResult <- function(result, resultId = NULL, resultType = NULL) {
-  resultId <- unique(resultId)
-  resultType <- unique(resultType)
-  if (is.null(resultType)) {
-    if (is.null(resultId)) {
-      res <- omopgenerics::emptySummarisedResult()
-    } else {
-      res <- result |>
-        omopgenerics::filterSettings(.data$result_id %in% .env$resultId)
-    }
-  } else {
-    if (is.null(resultId)) {
-      res <- result |>
-        omopgenerics::filterSettings(.data$result_type %in% .env$resultType)
-    } else {
-      res <- result |>
-        omopgenerics::filterSettings(
-          .data$result_id %in% .env$resultId &
-            .data$result_type %in% .env$resultType
-        )
-    }
+prepareResult <- function(result, resultList) {
+  purrr::map(resultList, \(x) filterResult(result, x))
+}
+filterResult <- function(result, filt) {
+  nms <- names(filt)
+  for (nm in nms) {
+    q <- paste0(".data$", nm, " %in% filt[[\"", nm, "\"]]") |>
+      rlang::parse_exprs() |>
+      rlang::eval_tidy()
+    result <- omopgenerics::filterSettings(result, !!!q)
   }
-  return(res)
+  return(result)
 }
 getValues <- function(result, resultList) {
   resultList |>
     purrr::imap(\(x, nm) {
-      res <- result |>
-        filterResult(resultId = x$result_id, resultType = x$result_type)
+      res <- filterResult(result, x)
       values <- res |>
         dplyr::select(!c("estimate_type", "estimate_value")) |>
         dplyr::distinct() |>
@@ -373,188 +357,35 @@ getValues <- function(result, resultList) {
     }) |>
     purrr::flatten()
 }
-tableTopLargeScaleCharacteristics <- function(result,
-                                              topConcepts = 10) {
-  # check input
-  result <- omopgenerics::validateResultArgument(result) |>
-    omopgenerics::filterSettings(.data$result_type == "summarise_large_scale_characteristics")
-  topConcepts <- as.integer(topConcepts)
-  omopgenerics::assertNumeric(topConcepts, integerish = TRUE, length = 1)
+getSelected <- function(choices) {
+  purrr::imap(choices, \(vals, nm) {
+    if (grepl("_denominator_sex$", nm)) {
+      if ("Both" %in% vals) return("Both")
+      return(vals[[1]])
+    }
 
-  # create table
-  x <- result |>
-    omopgenerics::tidy() |>
-    dplyr::group_by(dplyr::across(!c(
-      "variable_name", "concept_id", "count", "percentage"
-    ))) |>
-    dplyr::arrange(dplyr::desc(.data$percentage)) |>
-    dplyr::slice_head(n = topConcepts) |>
-    dplyr::mutate("top" = dplyr::row_number()) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(estimate_value = sprintf(
-      "%s (%s) <br> %i (%.1f%%)", .data$variable_name, .data$concept_id,
-      .data$count, .data$percentage
-    )) |>
-    dplyr::select(!c("variable_name", "concept_id", "count", "percentage")) |>
-    dplyr::rename(window = "variable_level") |>
-    dplyr::mutate(estimate_name = "counts", estimate_type = "character")
-  header <- x |>
-    dplyr::select(!dplyr::starts_with(c("estimate", "top"))) |>
-    as.list() |>
-    purrr::map(unique) |>
-    purrr::keep(\(x) length(x) > 1) |>
-    names()
-  hide <- colnames(x)[!colnames(x) %in% c("top", "estimate_value", header)]
-
-  # final table
-  x |>
-    visOmopResults::visTable(header = header, type = "gt", hide = hide) |>
-    gt::fmt_markdown()
-}
-tableLargeScaleCharacteristics <- function(result,
-                                           compareBy = NULL,
-                                           hide = c("type"),
-                                           smdReference = NULL,
-                                           type = "reactable") {
-  # initial checks
-  result <- result |>
-    omopgenerics::validateResultArgument() |>
-    omopgenerics::filterSettings(.data$result_type == "summarise_large_scale_characteristics") |>
-    dplyr::filter(.data$estimate_name == "percentage")
-
-  strataCols <- omopgenerics::strataColumns(result)
-  choic <- c("cdm_name", "cohort_name", strataCols, "variable_level", "type")
-  hide <- hide %||% character()
-
-  omopgenerics::assertChoice(type, choices = c("DT", "reactable"))
-  omopgenerics::assertChoice(compareBy, choices = choic, length = 1, null = TRUE)
-  omopgenerics::assertChoice(hide, choices = choic)
-
-  hide <- hide[!hide %in% compareBy]
-  result <- omopgenerics::tidy(result) |>
-    dplyr::select(!dplyr::all_of(hide))
-
-  if (length(compareBy) == 0) {
-    opts <- "percentage"
-    smdReference <- NULL
-  } else {
-    opts <- unique(result[[compareBy]])
-    omopgenerics::assertChoice(smdReference, choices = opts, length = 1, null = TRUE)
-  }
-
-  # pivot
-  if (!is.null(compareBy)) {
-    result <- result |>
-      tidyr::pivot_wider(
-        names_from = dplyr::all_of(compareBy),
-        values_fill = 0,
-        values_from = "percentage"
-      )
-  }
-
-  result <- result |>
-    dplyr::select(dplyr::any_of(c(
-      "cdm_name", "cohort_name", strataCols, "type",
-      "window" = "variable_level", "concept_name" = "variable_name",
-      "concept_id", opts
-    )))
-
-  if (length(smdReference) > 0) {
-    cols <- character()
-    for (col in opts) {
-      if (col == smdReference) {
-        ref <- rlang::set_names(smdReference, paste0(smdReference, " (ref)"))
+    if (grepl("_denominator_age_group$", nm)) {
+      bounds <- regmatches(vals, regexec("^(\\d+) to (\\d+)$", vals))
+      valid <- vapply(bounds, length, integer(1)) == 3
+      if (any(valid)) {
+        ranges <- vapply(bounds[valid], \(x) as.numeric(x[3]) - as.numeric(x[2]), numeric(1))
+        return(vals[valid][[which.max(ranges)]])
       } else {
-        result <- result |>
-          dplyr::mutate(!!paste0(col, " SMD") := qSmd(.data[[smdReference]], .data[[col]]))
-        cols <- c(cols, col, paste0(col, " SMD"))
+        return(vals[[1]])
       }
     }
-    result <- result |>
-      dplyr::relocate(dplyr::all_of(c(ref, cols)), .after = "concept_id")
-  }
 
-  if (type == "DT") {
-    out <- DT::datatable(result)
-  } else {
-    out <- reactable::reactable(result)
-  }
-  out
+    if (grepl("_outcome_cohort_name$", nm)) {
+      return(vals[[1]])
+    }
+
+    vals
+  })
 }
-qSmd <- function(ref, comp) {
-  dplyr::if_else(
-    ref == 0 & comp == 0,
-    0,
-    round(suppressWarnings((ref - comp)/sqrt((ref * (100 - ref) + comp * (100 - comp)) / 2)), 4)
-  )
-}
-plotComparedLargeScaleCharacteristics <- function(result,
-                                                  colour,
-                                                  reference,
-                                                  facet) {
-  # initial checks
-  result <- omopgenerics::validateResultArgument(result) |>
-    omopgenerics::filterSettings(.data$result_type == "summarise_large_scale_characteristics") |>
-    dplyr::filter(.data$estimate_name == "percentage")
-  strataCols <- omopgenerics::strataColumns(result)
-
-  choic <- c("cdm_name", "cohort_name", strataCols, "variable_level", "type")
-  omopgenerics::assertChoice(colour, choices = choic, length = 1)
-  result <- omopgenerics::tidy(result) |>
-    dplyr::rename(concept_name = "variable_name")
-  opts <- unique(result[[colour]])
-
-  if (length(opts) < 2) {
-    cli::cli_inform(c(x = "No multiple values for {.var {colour}} to compare."))
-    p <- ggplot2::ggplot() +
-      ggplot2::annotate(
-        geom = "text", x = 0.5, y = 0.5, size = 6, hjust = 0.5,
-        label = paste0("No multiple values to compare for: ", colour),
-      ) +
-      ggplot2::theme_void() +
-      ggplot2::xlim(0, 1) +
-      ggplot2::ylim(0, 1)
+renderInteractivePlot <- function(plt, interactive) {
+  if (interactive) {
+    plotly::renderPlotly(plt)
   } else {
-    omopgenerics::assertChoice(reference, choices = opts, length = 1, null = TRUE)
-
-    # prepare reference
-    ref <- result |>
-      dplyr::filter(.data[[colour]] == .env$reference) |>
-      dplyr::rename(reference_percentage = "percentage") |>
-      dplyr::select(!dplyr::all_of(colour)) |>
-      dplyr::cross_join(dplyr::tibble(!!colour := opts[opts != reference]))
-    join <- colnames(ref)[colnames(ref) != "reference_percentage"]
-    result <- result |>
-      dplyr::filter(.data[[colour]] != .env$reference) |>
-      dplyr::full_join(ref, by = join) |>
-      dplyr::mutate(dplyr::across(
-        c("percentage", "reference_percentage"), \(x) dplyr::coalesce(x, 0)
-      ))
-
-    label <- c(choic[choic != colour], "concept_name", "concept_id")
-    colourLab <- paste0(
-      "Comparator (",
-      colour |>
-        stringr::str_replace_all(pattern = "_", replacement = " ") |>
-        stringr::str_to_sentence(),
-      ")"
-    )
-
-    p <- visOmopResults::scatterPlot(
-      result = result, x= "reference_percentage", y = "percentage",
-      point = TRUE, line = FALSE, ribbon = FALSE, ymin = NULL, ymax = NULL,
-      facet = facet, colour = colour, group = NULL, label = label
-    ) +
-      ggplot2::geom_line(
-        mapping = ggplot2::aes(x = .data$x, y = .data$y),
-        data = dplyr::tibble(x = c(0, 100), y = c(0, 100)),
-        color = "black",
-        linetype = "dashed",
-        inherit.aes = FALSE
-      ) +
-      ggplot2::ylab("Comparator (%)") +
-      ggplot2::xlab("Reference (%)") +
-      ggplot2::labs(colour = colourLab, fill = colourLab)
+    shiny::renderPlot(plt)
   }
-  plotly::ggplotly(p)
 }

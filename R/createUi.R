@@ -6,9 +6,10 @@ uiStatic <- function(logo,
                      summary,
                      theme,
                      panelDetails,
-                     panelStructure) {
+                     panelStructure,
+                     updateButtons) {
   # create panels
-  panels <- writeUiPanels(panelDetails) |>
+  panels <- writeUiPanels(panelDetails, updateButtons) |>
     structurePanels(panelStructure)
 
   # ui
@@ -66,16 +67,17 @@ writeTitle <- function(title, logo) {
   x <- glue::glue(x) |> as.character()
   return(x)
 }
-writeUiPanels <- function(panelDetails) {
+writeUiPanels <- function(panelDetails, updateButtons) {
   # create a list with all the panel content
   panelDetails |>
-    purrr::map(\(x) {
+    purrr::imap(\(x, nm) {
       if (length(x$filters) > 0) {
         sidebar <- writeSidebar(filters = x$filters, position = "left") |>
           paste0(",")
       } else {
         sidebar <- ""
       }
+      ub <- updateButtonUi(updateButtons, nm)
       outputPanels <- writeContent(content = x$content) |>
         paste0(collapse = ",\n")
       c(
@@ -84,7 +86,8 @@ writeUiPanels <- function(panelDetails) {
           paste0('title = ', cast(x$title)),
           writeIcon(x$icon),
           "bslib::layout_sidebar(
-            {sidebar}
+          {sidebar}
+          {ub}
             bslib::navset_card_tab(
               {outputPanels}
             )
@@ -97,6 +100,14 @@ writeUiPanels <- function(panelDetails) {
       ) |>
         paste0(collapse = '\n')
     })
+}
+updateButtonUi <- function(updateButtons, id) {
+  if (!updateButtons) return("")
+  paste0(
+    "\nshiny::actionButton(\ninputId = \"update_", id,
+    "\", \nlabel = \"Update content\",\nwidth = \"200px\"\n),\nshiny::div(shiny::textOutput(outputId = \"update_message_",
+    id, "\"), class = \"ov_update_button\"),\n"
+  )
 }
 structurePanels <- function(panels, panelStructure) {
   if (length(panels) == 0) return(character())
@@ -155,7 +166,9 @@ writeOutput <- function(ot, id) {
   paste0(outputFunction(ot), '("', id, '") |>\nshinycssloaders::withSpinner()')
 }
 writeDownload <- function(do) {
-  if (length(do) == 0) return("")
+  if (length(do$render) == 0)  {
+    return("")
+  }
   paste0(
     'bslib::card_header(\nbslib::popover(\n',
     paste0(

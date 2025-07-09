@@ -1,9 +1,7 @@
 test_that("test choices", {
   # empty result
   res <- omopgenerics::emptySummarisedResult()
-  resultList <- res |>
-    panelDetailsFromResult() |>
-    resultListFromPanelDetails()
+  resultList <- purrr::map(panelDetailsFromResult(res), \(x) x$data)
   expect_no_error(x <- prepareResult(res, resultList))
   expected <- list()
   expect_equal(unname(x), expected)
@@ -92,4 +90,79 @@ test_that("test choices", {
   expect_identical(x$custom_result_2_estimate_name, "count")
   expect_identical(x$custom_result_2_time, "1")
   expect_identical(x$custom_result_2_x, "1")
+})
+
+test_that("test getSelected", {
+  # check only settings
+  res <- omopgenerics::newSummarisedResult(
+    x = dplyr::tibble(
+      result_id = c(1L, 2L),
+      cdm_name = c("cdm1", "cdm1"),
+      group_name = "denominator_cohort_name &&& outcome_cohort_name",
+      group_level = "denominator_cohort_1 &&& acetaminophen",
+      strata_name = "overall",
+      strata_level =  "overall",
+      variable_name = "Outcome",
+      variable_level = NA_character_,
+      estimate_name = "incidence_100000_pys",
+      estimate_type = "numeric",
+      estimate_value = "100",
+      additional_name = "incidence_start_date &&& incidence_end_date &&& analysis_interval",
+      additional_level = c("2000-01-01 &&& 2000-12-31 &&& years",
+                           "2001-01-01 &&& 2000-12-31 &&& years")
+    ),
+    settings = dplyr::tibble(
+      result_id = c(1L, 2L),
+      result_type = c("incidence", "incidence"),
+      package_name = "IncidencePrevalence",
+      package_version = "1.2.0",
+      group = "denominator_cohort_name &&& outcome_cohort_name",
+      additional = "incidence_start_date &&& incidence_end_date &&& analysis_interval",
+      denominator_age_group = c("0 to 150", "80 to 150"),
+      denominator_sex = c("Both", "Female")
+  ))
+  panelList <- list("incidence" = list(result_type = "incidence"))
+  expect_no_error(x <- getSelected(getValues(res, panelList)))
+
+  x_values <- getValues(res, panelList)
+  x_selected <- getSelected(getValues(res, panelList))
+
+  expect_true(all(
+    x_values$incidence_denominator_age_group == c("0 to 150", "80 to 150")
+  ))
+
+  expect_true(all(
+    x_selected$incidence_denominator_age_group == "0 to 150"
+  ))
+
+  expect_true(all(
+    x_values$incidence_denominator_sex == c("Both", "Female")
+  ))
+
+  expect_true(all(
+    x_selected$incidence_denominator_sex == "Both"
+  ))
+})
+
+test_that("test prepare result", {
+  x <- omopViewerResults
+  xl <- list(
+    "abc" = list(result_id = c(1, 2)),
+    "dsk2" = list(result_type = c("prevalence", "prevalence_attrition")),
+    "nxx" = list(result_type = "incidence", denominator_sex = "Female")
+  )
+
+  expect_no_error(res <- prepareResult(result = x, resultList = xl))
+  expect_identical(
+    res,
+    list(
+      "abc" = x |>
+        omopgenerics::filterSettings(result_id %in% c(1, 2)),
+      "dsk2" = x |>
+        omopgenerics::filterSettings(result_type %in% c("prevalence", "prevalence_attrition")),
+      "nxx" = x |>
+        omopgenerics::filterSettings(result_type %in% "incidence") |>
+        omopgenerics::filterSettings(denominator_sex %in% "Female")
+    )
+  )
 })

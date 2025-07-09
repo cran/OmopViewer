@@ -1,6 +1,8 @@
 
 #' Launch a dynamic shiny app where you can upload results.
 #'
+#' `r lifecycle::badge('experimental')`
+#'
 #' @return Launches the shiny app.
 #' @export
 #'
@@ -32,7 +34,7 @@ serverDynamic <- function(input, output, session) {
       rlang::parse_expr() |>
       rlang::eval_tidy()
     session$setCurrentTheme(theme)
-  })
+  }, ignoreInit = TRUE)
 
   # upload data to shiny
   shiny::observeEvent(input$upload_data_content, {
@@ -61,22 +63,32 @@ serverDynamic <- function(input, output, session) {
     panels(panelsUi(dataToUpload))
 
     # panelDetails
-    panelDetails <- panelDetailsFromResult(dataToUpload)
+    panelDetails <- panelDetailsFromResult(result = dataToUpload) |>
+      populatePanelDetailsOptions(result = dataToUpload)
 
     # create the new workingData()
-    resultList <- resultListFromPanelDetails(panelDetails)
+    resultList <- purrr::map(panelDetails, \(x) x$data)
     workingData(prepareResult(dataToUpload, resultList))
+
+    # get values
+    values <- getValues(result = dataToUpload, resultList = resultList)
 
     # add server modules
     serverModule <- paste0(c(
       "function(input, output, session) {",
-      createSummaryServer(summary = input$configuration_summary, data = "workingData()"),
-      createServer(panelDetails, data = "workingData()"),
+      createSummaryServer(summary = TRUE, data = "workingData()"),
+      createServer(panelDetails, data = "workingData()", updateButtons = TRUE),
       "}"
     ), collapse = "\n") |>
       rlang::parse_expr() |>
       rlang::eval_tidy()
     shiny::moduleServer(id = NULL, module = serverModule)
+  }, ignoreInit = TRUE)
+
+  shiny::observeEvent(input$remove_data_go, {
+    selected <- input$upload_data_uploaded_rows_selected
+    if (length(selected) == 0) return()
+    uploadedData(uploadedData()[-selected, ])
   })
 
 }
@@ -84,10 +96,7 @@ createDynamicUi <- function(panels, summary, data, theme) {
   logo <- "https://raw.githubusercontent.com/OHDSI/OmopViewer/12fbe3ad94529a91f46f3652e47b417e9a7f4bb6/inst/logos/hds_logo.svg"
 
   if (isTRUE(summary)) {
-    panels <- c(
-      list(rlang::eval_tidy(rlang::parse_exprs(summaryTab(TRUE)))),
-      panels
-    )
+    panels$summary <- rlang::eval_tidy(rlang::parse_expr(summaryTab(TRUE)))
     summary <- TRUE
   } else {
     summary <- FALSE
@@ -130,6 +139,12 @@ createDynamicUi <- function(panels, summary, data, theme) {
           label = "Bind data and load to shiny",
           icon = shiny::icon("gears")
         ),
+        shiny::actionButton(
+          inputId = "remove_data_go",
+          label = "Remove selected data",
+          icon = shiny::icon("trash"),
+          class = "btn-danger"
+        ),
         shiny::textOutput(outputId = "load_data_message")
       )
     ),
@@ -169,10 +184,10 @@ panelsUi <- function(result) {
   panelDetails <- panelDetailsFromResult(result) |>
     populatePanelDetailsOptions(result)
   # create panels
-  panels <- writeUiPanels(panelDetails)
+  panels <- writeUiPanels(panelDetails, updateButtons = TRUE)
 
   # resultList from panelDetails
-  resultList <- resultListFromPanelDetails(panelDetails)
+  resultList <- purrr::map(panelDetails, \(x) x$data)
 
   # filterValues from resultList
   values <- getValues(result, resultList)
