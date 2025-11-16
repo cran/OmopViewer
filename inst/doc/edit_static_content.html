@@ -365,7 +365,7 @@ subset our reuslts using the following command:</p>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; $ result_id                            &lt;int&gt; 19, 20, 21, 22, 23, 24, 25, 26, 2…</span></span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; $ result_type                          &lt;chr&gt; &quot;incidence&quot;, &quot;incidence&quot;, &quot;incide…</span></span>
 <span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; $ package_name                         &lt;chr&gt; &quot;IncidencePrevalence&quot;, &quot;Incidence…</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; $ package_version                      &lt;chr&gt; &quot;1.2.0&quot;, &quot;1.2.0&quot;, &quot;1.2.0&quot;, &quot;1.2.0…</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; $ package_version                      &lt;chr&gt; &quot;1.2.1&quot;, &quot;1.2.1&quot;, &quot;1.2.1&quot;, &quot;1.2.1…</span></span>
 <span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; $ group                                &lt;chr&gt; &quot;denominator_cohort_name &amp;&amp;&amp; outc…</span></span>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; $ strata                               &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;…</span></span>
 <span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; $ additional                           &lt;chr&gt; &quot;incidence_start_date &amp;&amp;&amp; inciden…</span></span>
@@ -391,7 +391,7 @@ using:</p>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-line</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;incidence&gt;</span></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Incidence[0m ([3mgt[0m); [1;34mPlot Incidence[0m ([3mui[0m); [1;34mPlot population[0m ([3mui[0m)</span></span></code></pre></div>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Incidence[0m ([3mgt[0m); [1;34mPlot Incidence[0m ([3mui[0m); [1;34mPlot population[0m ([3mui[0m)</span></span></code></pre></div>
 <p>Or just producing it from the results:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">panelDetailsFromResult</span>(<span class="at">result =</span> result)</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; $incidence</span></span>
@@ -399,7 +399,7 @@ using:</p>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m chart-line</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;incidence&gt;</span></span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable Incidence[0m ([3mgt[0m); [1;34mPlot Incidence[0m ([3mui[0m); [1;34mPlot population[0m ([3mui[0m)</span></span></code></pre></div>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Incidence[0m ([3mgt[0m); [1;34mPlot Incidence[0m ([3mui[0m); [1;34mPlot population[0m ([3mui[0m)</span></span></code></pre></div>
 <p>We can then define our <code>panelDetails</code> object using:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>panelDetails <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">incidence_female =</span> <span class="fu">getPanel</span>(<span class="st">&quot;incidence&quot;</span>),</span>

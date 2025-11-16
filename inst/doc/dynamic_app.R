@@ -8,5 +8,5 @@ knitr::opts_chunk$set(
 library(OmopViewer)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  launchDynamicApp()
+# launchDynamicApp()
 

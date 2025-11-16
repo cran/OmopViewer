@@ -36,17 +36,17 @@ omopViewerPanels
 panelDetailsFromResult(result = result)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  result |>
-#    filterSettings(
-#      result_type == "incidence" &
-#        denominator_age_group %in% c("0 to 19", "20 to 39")
-#    )
+# result |>
+#   filterSettings(
+#     result_type == "incidence" &
+#       denominator_age_group %in% c("0 to 19", "20 to 39")
+#   )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  ps1 <- list(
-#    grp_1 = c("summarise_omop_snapshot", "incidence"),
-#    grp_2 = c("summarise_characteristics")
-#  )
-#  
-#  exportStaticApp(result = result, directory = tempdir(), panelStructure = ps1)
+# ps1 <- list(
+#   grp_1 = c("summarise_omop_snapshot", "incidence"),
+#   grp_2 = c("summarise_characteristics")
+# )
+# 
+# exportStaticApp(result = result, directory = tempdir(), panelStructure = ps1)
 

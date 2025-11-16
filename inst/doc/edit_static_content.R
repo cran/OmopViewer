@@ -43,7 +43,7 @@ panelDetails$incidence_female$icon <- "venus"
 panelDetails$incidence_male$icon <- "mars"
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  exportStaticApp(result = result, panelDetails = panelDetails, directory = tempdir())
+# exportStaticApp(result = result, panelDetails = panelDetails, directory = tempdir())
 
 ## -----------------------------------------------------------------------------
 panelDetails$incidence_female$content$tidy <- NULL
@@ -54,5 +54,5 @@ panelDetails$incidence_female$exclude_filters <- c(panelDetails$incidence_female
 panelDetails$incidence_male$exclude_filters <- c(panelDetails$incidence_male$exclude_filters, "denominator_sex")
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  exportStaticApp(result = result, panelDetails = panelDetails, directory = tempdir())
+# exportStaticApp(result = result, panelDetails = panelDetails, directory = tempdir())
 
