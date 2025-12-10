@@ -59,7 +59,9 @@ downloadRawDataServer <- function(data) {
     content = function(file) {
       [data] |>
         omopgenerics::bind() |>
-        omopgenerics::exportSummarisedResult(fileName = file)
+        omopgenerics::exportSummarisedResult(
+          fileName = file, logFile = NULL, logSqlPath = NULL
+        )
     }
   )' |>
     glue::glue(.open = "[", .close = "]") |>
@@ -67,8 +69,8 @@ downloadRawDataServer <- function(data) {
 }
 writeUpdateDataMessage <- function(nm, filters, updateButtons) {
   if (length(filters) == 0 || !updateButtons) return("")
-  inputs <- paste0(
-    "shiny::observe({updateButtons$", nm, " <- TRUE}) |>",
+  inputs <- c(
+    paste0("shiny::observe({updateButtons$", nm, " <- TRUE}) |>"),
     "shiny::bindEvent(",
     c(paste0("input$", nm, "_", names(filters)), "ignoreInit = TRUE") |>
       paste0(collapse = ",\n"),

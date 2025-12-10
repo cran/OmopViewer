@@ -363,15 +363,15 @@ searching for.</p>
 package for illustration:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Inspect the structure of the sample data</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">summary</span>(omopViewerResults)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; A summarised_result object with 39307 rows, 96 different result_id, 1 different</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; cdm names, and 45 settings.</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; CDM names: synthea-covid19-200k.</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; A summarised_result object with 53041 rows, 122 different result_id, 1 and 1</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; different cdm names, and 53 settings.</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; CDM names: synthea-covid19-200k and mock database.</span></span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; Settings: result_type, package_name, package_version, group, strata,</span></span>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; additional, min_cell_count, analysis, analysis_censor_cohort_name,</span></span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; analysis_complete_database_intervals, analysis_full_contribution,</span></span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; analysis_level, analysis_outcome_washout, analysis_repeated_events,</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; analysis_type, censor_date, cohort_definition_id, cohort_table_name, …, type,</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; and unknown_indication_table.</span></span></code></pre></div>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; analysis_type, censor_date, censor_on_cohort_exit, cohort_definition_id, …,</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; type, and unknown_indication_table.</span></span></code></pre></div>
 </div>
 <div id="subsetting-the-data" class="section level2">
 <h2>Subsetting the Data</h2>
@@ -385,7 +385,7 @@ result types:</p>
 entries where result_type is one of “summarise_omop_snapshot”,
 “summarise_characteristics”, or “incidence”.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">summary</span>(result)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; A summarised_result object with 1245 rows, 20 different result_id, 1 different</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; A summarised_result object with 1254 rows, 20 different result_id, 1 different</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; cdm names, and 20 settings.</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; CDM names: synthea-covid19-200k.</span></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; Settings: result_type, package_name, package_version, group, strata,</span></span>
@@ -406,9 +406,9 @@ the app and the processed data (a <summarised_result> object):</p>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; ℹ Processing data</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; ✔ Data processed: 3 panels idenfied: `summarise_omop_snapshot`,</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;   `summarise_characteristics`, and `incidence`.</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; ℹ Creating shiny from provided data</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; ℹ Creating `shiny` from provided data</span></span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; ✔ Shiny created in:</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;   /var/folders/pl/k11lm9710hlgl02nvzx4z9wr0000gp/T//Rtmp6FrqxU/shiny</span></span></code></pre></div>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;   /var/folders/pl/k11lm9710hlgl02nvzx4z9wr0000gp/T//Rtmptj9Tde/shiny</span></span></code></pre></div>
 <p>Note that by default if executed in an interactive environment like
 <em>R Studio</em> the project will be opened in a separated window. Use
 <code>open = FALSE</code> if you do not wish to open the shiny app after
@@ -420,15 +420,17 @@ specified directory along with some files:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">list.files</span>(<span class="at">path =</span> here<span class="sc">::</span><span class="fu">here</span>(dir, <span class="st">&quot;shiny&quot;</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; _brand.yml</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; background.md</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; data/preprocess.R</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; data/results.csv</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; functions.R</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; global.R</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; server.R</span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; shiny.Rproj</span></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; ui.R</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; www/hds_logo.svg</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; www/ohdsi_logo.svg</span></span></code></pre></div>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; data/README.md</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; functions.R</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; global.R</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; rawData/README.md</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; rawData/preprocess.R</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; rawData/results.csv</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; server.R</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; shiny.Rproj</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; ui.R</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; www/hds_logo.svg</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; www/ohdsi_logo.svg</span></span></code></pre></div>
 <ul>
 <li><p><code>background.R</code> is only generated if background
 argument is set to <code>TRUE</code> and is used to customise the
@@ -451,7 +453,7 @@ by default <code>hds_logo.svg</code> and
 <p>The shiny generated contained a total of 3 panels, this was
 determined by the argument <code>panelDetails</code>. Each element in
 <code>panelDetails</code> will be used to create a different panel in
-the shiny app. The package contains in total 31 predefined panels:</p>
+the shiny app. The package contains in total 36 predefined panels:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>omopViewerPanels</span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; $summarise_omop_snapshot</span></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; [34mSnapshot[0m (OmopViewer panel)</span></span>
@@ -663,12 +665,47 @@ the shiny app. The package contains in total 31 predefined panels:</p>
 <span id="cb7-209"><a href="#cb7-209" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 7 automatic filters</span></span>
 <span id="cb7-210"><a href="#cb7-210" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Treatments[0m ([3mgt[0m); [1;34mPlot Treatment[0m ([3mui[0m)</span></span>
 <span id="cb7-211"><a href="#cb7-211" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb7-212"><a href="#cb7-212" tabindex="-1"></a><span class="co">#&gt; $default</span></span>
-<span id="cb7-213"><a href="#cb7-213" tabindex="-1"></a><span class="co">#&gt; [34m&lt;result_type&gt;[0m (OmopViewer panel)</span></span>
-<span id="cb7-214"><a href="#cb7-214" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m folder</span></span>
-<span id="cb7-215"><a href="#cb7-215" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m -no data-</span></span>
-<span id="cb7-216"><a href="#cb7-216" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
-<span id="cb7-217"><a href="#cb7-217" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable[0m ([3mgt[0m)</span></span></code></pre></div>
+<span id="cb7-212"><a href="#cb7-212" tabindex="-1"></a><span class="co">#&gt; $measurement_timings</span></span>
+<span id="cb7-213"><a href="#cb7-213" tabindex="-1"></a><span class="co">#&gt; [34mMeasurement timing[0m (OmopViewer panel)</span></span>
+<span id="cb7-214"><a href="#cb7-214" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m timeline</span></span>
+<span id="cb7-215"><a href="#cb7-215" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;measurement_timings&gt;</span></span>
+<span id="cb7-216"><a href="#cb7-216" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-217"><a href="#cb7-217" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Measurement Timing[0m ([3mgt[0m); [1;34mPlot Measurement Timing[0m ([3mui[0m)</span></span>
+<span id="cb7-218"><a href="#cb7-218" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-219"><a href="#cb7-219" tabindex="-1"></a><span class="co">#&gt; $measurement_value_as_numeric</span></span>
+<span id="cb7-220"><a href="#cb7-220" tabindex="-1"></a><span class="co">#&gt; [34mMeasurement as numeric[0m (OmopViewer panel)</span></span>
+<span id="cb7-221"><a href="#cb7-221" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m gauge-high</span></span>
+<span id="cb7-222"><a href="#cb7-222" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;measurement_value_as_numeric&gt;</span></span>
+<span id="cb7-223"><a href="#cb7-223" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-224"><a href="#cb7-224" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Measurement Numeric[0m ([3mgt[0m); [1;34mPlot Measurement Numeric[0m ([3mui[0m)</span></span>
+<span id="cb7-225"><a href="#cb7-225" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-226"><a href="#cb7-226" tabindex="-1"></a><span class="co">#&gt; $measurement_value_as_concept</span></span>
+<span id="cb7-227"><a href="#cb7-227" tabindex="-1"></a><span class="co">#&gt; [34mMeasurement as concept[0m (OmopViewer panel)</span></span>
+<span id="cb7-228"><a href="#cb7-228" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m cubes</span></span>
+<span id="cb7-229"><a href="#cb7-229" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;measurement_value_as_concept&gt;</span></span>
+<span id="cb7-230"><a href="#cb7-230" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-231"><a href="#cb7-231" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Measurement Concept[0m ([3mgt[0m); [1;34mPlot Measurement Concept[0m ([3mui[0m)</span></span>
+<span id="cb7-232"><a href="#cb7-232" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-233"><a href="#cb7-233" tabindex="-1"></a><span class="co">#&gt; $survival</span></span>
+<span id="cb7-234"><a href="#cb7-234" tabindex="-1"></a><span class="co">#&gt; [34mSurvival Analyses[0m (OmopViewer panel)</span></span>
+<span id="cb7-235"><a href="#cb7-235" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m stairs</span></span>
+<span id="cb7-236"><a href="#cb7-236" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;survival_summary&gt;, &lt;survival_estimates&gt;, &lt;survival_events&gt;, &lt;survival_attrition&gt;</span></span>
+<span id="cb7-237"><a href="#cb7-237" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 4 automatic filters</span></span>
+<span id="cb7-238"><a href="#cb7-238" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Summary[0m ([3mgt[0m); [1;34mTable Events[0m ([3mgt[0m); [1;34mTable Attrition[0m ([3mgt[0m); [1;34mPlot Survival[0m ([3mui[0m)</span></span>
+<span id="cb7-239"><a href="#cb7-239" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-240"><a href="#cb7-240" tabindex="-1"></a><span class="co">#&gt; $summarise_log_file</span></span>
+<span id="cb7-241"><a href="#cb7-241" tabindex="-1"></a><span class="co">#&gt; [34mLogs[0m (OmopViewer panel)</span></span>
+<span id="cb7-242"><a href="#cb7-242" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m clipboard-list</span></span>
+<span id="cb7-243"><a href="#cb7-243" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m result_type: &lt;summarise_log_file&gt;</span></span>
+<span id="cb7-244"><a href="#cb7-244" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 1 automatic filters</span></span>
+<span id="cb7-245"><a href="#cb7-245" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTable Logs[0m ([3mgt[0m); [1;34mPlot Timing[0m ([3mui[0m)</span></span>
+<span id="cb7-246"><a href="#cb7-246" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-247"><a href="#cb7-247" tabindex="-1"></a><span class="co">#&gt; $default</span></span>
+<span id="cb7-248"><a href="#cb7-248" tabindex="-1"></a><span class="co">#&gt; [34m&lt;result_type&gt;[0m (OmopViewer panel)</span></span>
+<span id="cb7-249"><a href="#cb7-249" tabindex="-1"></a><span class="co">#&gt; • [1m icon:[0m folder</span></span>
+<span id="cb7-250"><a href="#cb7-250" tabindex="-1"></a><span class="co">#&gt; • [1m data:[0m -no data-</span></span>
+<span id="cb7-251"><a href="#cb7-251" tabindex="-1"></a><span class="co">#&gt; • [1m filters:[0m 1 filters + 6 automatic filters</span></span>
+<span id="cb7-252"><a href="#cb7-252" tabindex="-1"></a><span class="co">#&gt; • [1m content:[0m [1;34mTidy[0m ([3mDT[0m); [1;34mTable[0m ([3mgt[0m)</span></span></code></pre></div>
 <p>Each panel is associated with a determined <code>result_type</code>
 as showed in the print. By default, the function
 <code>panelDetailsFromResult()</code> groups the results by
